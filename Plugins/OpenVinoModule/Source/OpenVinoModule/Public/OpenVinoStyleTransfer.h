@@ -18,46 +18,40 @@ public:
 	// Sets default values for this component's properties
 	UOpenVinoStyleTransfer();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OpenVINO Plugin")
 	UTexture2D* resTexture;
 
 	/**
- * @brief Initializes OpenVino
- * @param xmlFilePath
- * @param binFilePath
- * @param labelsFilePath
- * @return message saying that plugin has been initialized or not
- */
-	UFUNCTION(BlueprintCallable)
+	 * @brief Initializes OpenVino
+	 * @param xmlFilePath
+	 * @param binFilePath
+	 * @param labelsFilePath (for classification)
+	 * @return message saying that plugin has been initialized or not
+	 */
+	UFUNCTION(BlueprintCallable, Category = "OpenVINO Plugin")
 		FString Initialize(FString xmlFilePath, FString binFilePath, FString labelsFilePath);
 
 	/**
-	 * @brief starts classification process, will fire an event once classification has completed
-	 * @param filePath image file path to be analysed
-	 * @return message saying that classification has started
-	 */
-	UFUNCTION(BlueprintCallable, meta = (HidePin = "Outer", DefaultToSelf = "Outer"))
-		FString BeginStyleTransferFromPath(UObject* Outer, FString filePath);
+	* @brief Style Transfer from Texture rendered by Engine
+	* @param Outer 
+	* @param TextureData, Texture rendered by Engine
+	* @param Inwidth, width of Texture
+	* @param Inheight, height of Texture
+	* @return message saying that the style transfer begins
+	*/
+	UFUNCTION(BlueprintCallable, meta = (HidePin = "Outer", DefaultToSelf = "Outer"), Category = "OpenVINO Plugin")
+		FString BeginStyleTransferFromTexture(UObject* Outer, TArray<FColor>& TextureData, int Inwidth, int Inheight);
+	/**
+	* @brief This Blueprint event will be fired once classification has completed
+	* @param classification result
+	*/
+	UPROPERTY(BlueprintAssignable, Category = "OpenVINO Plugin")
+		FStyleTransferComplete OnStyleTransferComplete;
 private:
 
 	/** Helper function to dynamically create a new texture from raw pixel data. */
-	static UTexture2D*  CreateTexture(UObject* Outer, TArray<uint8>& PixelData, int32 InSizeX, int32 InSizeY, EPixelFormat InFormat, FName BaseName);
-public:
-	/**
-	 * @brief This Blueprint event will be fired once classification has completed
-	 * @param classification result
-	 */
-	UPROPERTY(BlueprintAssignable)
-		FStyleTransferComplete OnStyleTransferComplete;
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	static UTexture2D*  CreateTexture(UObject* Outer, unsigned char* PixelData, int32 InSizeX, int32 InSizeY, EPixelFormat InFormat, FName BaseName);
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-private:
 	/**
 	 * @brief Returns last error from OpenVino, logging it first to UE's log system
 	 * @return Last error message
@@ -71,6 +65,18 @@ private:
 	/*UTexture2D* GetTextureFromStyleTransfer(UObject* Outer, FString filePath);*/
 
 
+public:
+	FDelegateHandle m_OnBackBufferReadyToPresent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "OpenVINO Plugin")
+		UTexture2D* OutTex;
 
-		
+	void OnBackBufferReady_RenderThread(SWindow& SlateWindow, const FTexture2DRHIRef& BackBuffer);
+
+	//注册获取BackBuffer数据的回调函数
+	UFUNCTION(BlueprintCallable, Category = "OpenVINO Plugin")
+		void BindBackbufferCallback();
+
+	//解绑获取BackBuffer数据的回调函数
+	UFUNCTION(BlueprintCallable, Category = "OpenVINO Plugin")
+		void UnBindBackbufferCallback();
 };

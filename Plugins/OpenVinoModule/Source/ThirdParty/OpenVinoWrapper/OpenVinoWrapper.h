@@ -72,15 +72,30 @@ extern "C"
 		size_t maxResultSize);
 
 	/*
- * @brief This method is used to infer results, based on loaded model (see "OpenVino_Initialize")
- * and based on image loaded from "filePath".
- * @param filePath path to the file to be analysed
- * @param result called-allocated buffer where result string will be copied to
- * @param maxResultSize maximum size of result buffer
- * @return true if call is successfull or false if not
- */
+	* @brief This method is used to infer results, based on loaded model (see "OpenVino_Initialize")
+	* and based on texture rendered by engine.
+	* @param texture data 
+	* @param inwidth, texture width
+	* @param inheight, texture height
+	* @param outwidth, image width after style transfer
+	* @param outheight, image height after style transfer
+	* @param output, image data after style transfer
+	* @return true if call is successfull or false if not
+	*/
 	DLLEXPORT bool OpenVino_Infer_FromTexture(
-		char* filePath, int* width, int* height, float* rawdata);
+		unsigned char* input, int inwidth, int inheight, int* width, int* height, unsigned char* output);
+
+	/*
+	* @brief This method is used to infer results, based on loaded model (see "OpenVino_Initialize")
+	* and based on image loaded from "filePath".
+	* @param filePath path to the file to be analysed
+	* @param outwidth, image width after style transfer
+	* @param outheight, image height after style transfer
+	* @param output, image data after style transfer
+	* @return true if call is successfull or false if not
+	*/
+	DLLEXPORT bool OpenVino_Infer_FromFile(
+		char* filePath, int* outwidth, int* outheight, float* output);
 	/*
 	 * @brief This method is used to get last error message that any of the other methods might have set.
 	 * @param lastErrorMessage user-allocated buffer into which error message will be copied

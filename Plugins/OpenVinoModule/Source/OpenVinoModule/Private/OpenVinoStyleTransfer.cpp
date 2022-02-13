@@ -72,67 +72,96 @@ UOpenVinoStyleTransfer::Initialize(
 	return TEXT("OpenVino has been initialized.");
 }
 
+void  UOpenVinoStyleTransfer::BindBackbufferCallback()
+{
+
+	if (FSlateApplication::IsInitialized())
+	{
+		m_OnBackBufferReadyToPresent.Reset();
+
+		m_OnBackBufferReadyToPresent = FSlateApplication::Get().GetRenderer()->OnBackBufferReadyToPresent().AddUObject(this, &UOpenVinoStyleTransfer::OnBackBufferReady_RenderThread);
+	}
+}
+
+void UOpenVinoStyleTransfer::UnBindBackbufferCallback()
+{
+	if (m_OnBackBufferReadyToPresent.IsValid())
+	{
+		FSlateApplication::Get().GetRenderer()->OnBackBufferReadyToPresent().Remove(m_OnBackBufferReadyToPresent);
+	}
+}
+
+
+void UOpenVinoStyleTransfer::OnBackBufferReady_RenderThread(SWindow& SlateWindow, const FTexture2DRHIRef& BackBuffer)
+{
+
+	//UE_LOG(LogTemp, Log, TEXT("m1"));
+	FTexture2DRHIRef GameBuffer = BackBuffer;
+	FRHICommandListImmediate& RHICmdList = FRHICommandListExecutor::GetImmediateCommandList();
+	FIntRect Rect(0, 0, GameBuffer->GetSizeX(), GameBuffer->GetSizeY());
+	TArray<FColor> outData;
+	RHICmdList.ReadSurfaceData(GameBuffer, Rect, outData, FReadSurfaceDataFlags(RCM_UNorm));
+	// outData is the image data of the overall rendering scene
+
+	// if not set the aphla, the image will be transparent
+	for (FColor& color : outData)
+	{
+		color.A = 255;
+	}
+	BeginStyleTransferFromTexture(this, outData, Rect.Width(), Rect.Height());
+}
+
 
 /**
- * @brief starts style transfer process, will fire an event once style transfer has completed
- * @param filePath image file path to be analysed
- * @return message saying that classification has started
- */
+* @brief Style Transfer from Texture rendered by Engine
+* @param Outer
+* @param TextureData, Texture rendered by Engine
+* @param Inwidth, width of Texture
+* @param Inheight, height of Texture
+* @return message saying that the style transfer begins
+*/
 FString
-UOpenVinoStyleTransfer::BeginStyleTransferFromPath(UObject* Outer, FString filePath)
+UOpenVinoStyleTransfer::BeginStyleTransferFromTexture(UObject* Outer, TArray<FColor>& TextureData, int inwidth, int inheight)
 {
-	//Future = Async(EAsyncExecution::ThreadPool, [=]()GetTextureFromStyleTransfer(Outer, filePath));
 	TPromise<UTexture2D*> Result;
 	FString resultlog;
-	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [Outer, filePath, &resultlog, &Result]()
+	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [Outer, TextureData, inwidth, inheight, &resultlog, &Result, this]()
 	{
-		
-		
-		if (!TestFileExists(filePath))
+
+		int outwidth, outheight;
+		unsigned char* out;
+		int arraysize = 224 * 224 * 3;
+		out = (unsigned char*)malloc(arraysize * sizeof(unsigned char));
+		unsigned char* inputdata;
+		inputdata = (unsigned char*)malloc(inwidth * inheight * 3 * sizeof(unsigned char));
+		int index = 0;
+		for (FColor color : TextureData)
 		{
-			resultlog = TEXT("File Path has not been passed!");
+			inputdata[index] = color.R ;
+			inputdata[index + 1] =color.G ;
+			inputdata[index + 2] = color.B ;
+			index = index + 3;
 		}
+		
+		auto ret = OpenVino_Infer_FromTexture(
+			inputdata, inwidth, inheight, &outwidth, &outheight, out);
+
+		FString TextureBaseName = TEXT("Texture_") + FPaths::GetBaseFilename("test");
+		UTexture2D* temp = CreateTexture(Outer, out, outwidth, outheight, EPixelFormat::PF_B8G8R8A8, FName(*TextureBaseName));
+		Result.SetValue(temp);
+		if (!ret)
+		{
+			resultlog = TEXT("ERRO");//GetAndLogLastError();
+		}
+
 		else
 		{
-			// This is the buffer for result, with arbitrary size 1024: 
-			vector<char> message(1024, '\0');
-
-			int width, height;
-			float* out;
-			int arraysize = 1280 * 720 * 3;
-			out = (float*)malloc(arraysize * sizeof(float));
-			auto ret = OpenVino_Infer_FromTexture(
-				TCHAR_TO_ANSI(*filePath), &width, &height, out);
-
-			TArray<uint8> rawdata;
-
-			int idx = 0;
-			while (idx < arraysize)
-			{
-				rawdata.Add(static_cast<uint8>(*out));
-				idx++;
-				out++;
-			}
-			
-			FString TextureBaseName = TEXT("Texture_") + FPaths::GetBaseFilename("test");
-			UTexture2D* temp = CreateTexture(Outer, rawdata, width, height, EPixelFormat::PF_B8G8R8A8, FName(*TextureBaseName));
-			Result.SetValue(temp);
-
-			if (!ret)
-			{
-				resultlog = TEXT("ERRO");//GetAndLogLastError();
-			}
-				
-			else
-			{
-				resultlog = "value:" + FString::FromInt(height);
-			}
-				
+			resultlog = TEXT("value:");// +FString::FromInt(outheight);
 		}
 
-		// Broadcast event when classification has completed
-	});
-
+	}
+	);
+	
 	Future = Result.GetFuture();
 	if (Future.IsValid())
 	{
@@ -142,43 +171,8 @@ UOpenVinoStyleTransfer::BeginStyleTransferFromPath(UObject* Outer, FString fileP
 	return TEXT("Starting Style Transfer...");
 }
 
-/*UTexture2D*
-UOpenVinoStyleTransfer::GetTextureFromStyleTransfer(UObject* Outer, FString filePath)
-{
-	FString result;
 
-	if (!TestFileExists(filePath))
-	{
-		result = TEXT("File Path has not been passed!");
-	}
-	else
-	{
-		// This is the buffer for result, with arbitrary size 1024: 
-		vector<char> message(1024, '\0');
-
-		int width, height;
-		float* out;
-		int arraysize = 1280 * 720 * 3;
-		out = (float*)malloc(arraysize * sizeof(float));
-		auto ret = OpenVino_Infer_FromTexture(
-			TCHAR_TO_ANSI(*filePath), &width, &height, out);
-
-		TArray<uint8> rawdata;
-
-		int idx = 0;
-		while (idx < arraysize)
-		{
-			rawdata.Add(static_cast<uint8>(*out));
-			idx++;
-			out++;
-		}
-
-		FString TextureBaseName = TEXT("Texture_") + FPaths::GetBaseFilename("test");
-		return CreateTexture(Outer, rawdata, width, height, EPixelFormat::PF_B8G8R8A8, FName(*TextureBaseName));
-	}
-}
-*/
-UTexture2D* UOpenVinoStyleTransfer::CreateTexture(UObject* Outer, TArray<uint8>& PixelData, int32 InSizeX, int32 InSizeY, EPixelFormat InFormat, FName BaseName)
+UTexture2D* UOpenVinoStyleTransfer::CreateTexture(UObject* Outer, unsigned char* PixelData, int32 InSizeX, int32 InSizeY, EPixelFormat InFormat, FName BaseName)
 {
 	// Shamelessly copied from UTexture2D::CreateTransient with a few modifications
 	if (InSizeX <= 0 || InSizeY <= 0 ||
@@ -206,11 +200,11 @@ UTexture2D* UOpenVinoStyleTransfer::CreateTexture(UObject* Outer, TArray<uint8>&
 	Mip->SizeY = InSizeY;
 	Mip->BulkData.Lock(LOCK_READ_WRITE);
 	void* TextureData = Mip->BulkData.Realloc(NumBlocksX * NumBlocksY * GPixelFormats[InFormat].BlockBytes);
-	FMemory::Memcpy(TextureData, PixelData.GetData(), PixelData.Num());
+	FMemory::Memcpy(TextureData, PixelData, InSizeX*InSizeY*3);
 	Mip->BulkData.Unlock();
 
 	NewTexture->UpdateResource();
-	UE_LOG(LogTemp,Warning, TEXT("reachable %d"), NewTexture->IsUnreachable());
+	//UE_LOG(LogTemp,Warning, TEXT("reachable %d"), NewTexture->IsUnreachable());
 	return NewTexture;
 }
 
@@ -239,22 +233,3 @@ UOpenVinoStyleTransfer::GetAndLogLastError()
 
 	return lastError;
 }
-
-// Called when the game starts
-void UOpenVinoStyleTransfer::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// ...
-	
-}
-
-
-// Called every frame
-void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-

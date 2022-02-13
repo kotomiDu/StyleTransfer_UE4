@@ -70,6 +70,19 @@ OpenVinoData::Initialize(
 	input_info = network.getInputsInfo().begin()->second;
 	input_name = network.getInputsInfo().begin()->first;
 
+
+	cv::Size& new_input_resolution = cv::Size(224, 224);
+	SizeVector input_dims = input_info->getTensorDesc().getDims();
+	input_dims[0] = 1;
+	if (new_input_resolution != cv::Size()) {
+		input_dims[2] = static_cast<size_t>(new_input_resolution.height);
+		input_dims[3] = static_cast<size_t>(new_input_resolution.width);
+	}
+
+	std::map<std::string, SizeVector> input_shapes;
+	input_shapes[network.getInputsInfo().begin()->first] = input_dims;
+	network.reshape(input_shapes);
+
 	input_info->setLayout(Layout::NCHW);
 	input_info->setPrecision(Precision::U8);
 
@@ -222,6 +235,96 @@ OpenVinoData::Infer(
 	memcpy(out, outputImage.data, arraysize * sizeof(float));
 	*w = outputImage.size().width;
 	*h = outputImage.size().height;
+
+	//cv::imwrite("test1.png", outputImage);
+	return true;
+}
+
+/*
+ * @brief Call infer using loaded model files
+ * @param filePath
+ * @param modelBinFilePath
+ * @param modelLabelFilePath
+ */
+bool
+OpenVinoData::Infer(
+	unsigned char* inferdata, int inwidth, int inheight, int* outwidth, int* outheight, unsigned char* out)
+{
+	// --------------------------- 5. Create infer request -------------------------------------------------
+	clog << "5. Creating request..." << endl;
+	InferRequest infer_request = executable_network.CreateInferRequest();
+
+	// return image_file_name;
+
+	// --------------------------- 6. Prepare input --------------------------------------------------------
+	cout << "6. Prepare input..." << endl;
+
+	cv::Mat outputImage;
+	cv::Mat image(inheight, inwidth, CV_8UC3, inferdata);
+	cv::imwrite("debug1.png", image);
+	/*
+	cv::Mat image = cv::imread(filePath);
+	cv::cvtColor(image, image, cv::COLOR_BGRA2RGB);*/
+	
+	/* Resize manually and copy data from the image to the input blob */
+	Blob::Ptr input = infer_request.GetBlob(input_name);
+	auto input_data = input->buffer().as<PrecisionTrait<Precision::U8>::value_type*>();
+
+	
+	auto size = cv::Size(input_info->getTensorDesc().getDims()[3], input_info->getTensorDesc().getDims()[2]);
+	cv::resize(image, image, size);
+
+	size_t channels_number = input->getTensorDesc().getDims()[1];
+	size_t image_size = input->getTensorDesc().getDims()[3] * input->getTensorDesc().getDims()[2];
+
+	for (size_t pid = 0; pid < image_size; ++pid) {
+		for (size_t ch = 0; ch < channels_number; ++ch) {
+			input_data[ch * image_size + pid] = image.at<cv::Vec3b>(pid)[ch];
+		}
+	}
+	// -----------------------------------------------------------------------------------------------------
+
+	// --------------------------- 7. Do inference --------------------------------------------------------
+	clog << "7. Do inference..." << endl;
+	/* Running the request synchronously */
+	infer_request.Infer();
+	// -----------------------------------------------------------------------------------------------------
+
+	// --------------------------- 8. Process output ------------------------------------------------------
+	clog << "8. Process output..." << endl;
+	Blob::Ptr output = infer_request.GetBlob(output_name);
+	auto output_shape = output->getTensorDesc().getDims();
+	int length = output_shape[0] * output_shape[1] * output_shape[2] * output_shape[3];
+	LockedMemory<const void> blobMapped = as<MemoryBlob>(output)->rmap();
+	float* output_data_pointer = blobMapped.as<float*>();
+	std::vector<float> output_data(output_data_pointer, output_data_pointer + length);
+
+	//align result dimension
+	//output_data  = transpose4d(output_data, ieSizeToVector(output_shape), { 0, 3, 1, 2 });
+	int rows = output_shape[2];
+	int cols = output_shape[3];
+	if (output_data.size() == rows * cols * 3) // check that the rows and cols match the size of your vector
+	{
+		//copy vector to mat
+		cv::Mat channelR(rows, cols, CV_32FC1, output_data.data());
+		cv::Mat channelG(rows, cols, CV_32FC1, output_data.data() + cols * rows);
+		cv::Mat channelB(rows, cols, CV_32FC1, output_data.data() + 2 * cols * rows);
+		// RGB2BGR
+		std::vector<cv::Mat> channels{ channelB, channelG, channelR };
+
+		// Create the output matrix
+		merge(channels, outputImage);
+	}
+	//postprocessing
+	// normolize  (-1,1) to (0,255)
+	cv::normalize(outputImage, outputImage, 0, 255, cv::NORM_MINMAX);
+
+	outputImage.convertTo(outputImage, CV_8U);
+	cv::imwrite("debug2.png", outputImage);
+	int arraysize = outputImage.rows * outputImage.cols * outputImage.channels();
+	memcpy(out, outputImage.data, arraysize * sizeof(unsigned char));
+	*outwidth = outputImage.size().width;
+	*outheight = outputImage.size().height;
 
 	//cv::imwrite("test1.png", outputImage);
 	return true;

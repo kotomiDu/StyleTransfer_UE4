@@ -64,7 +64,11 @@ public:
 
 	/**
 	 * @brief Call infer using loaded model files
-	 * @param Image
+	 * @param filePath
+	 * @param width of image after style transfer
+	 * @param height of image after style transfer
+	 * @param height of image after style transfer
+	 * @param out, image raw data after style transfer
 	 */
 	bool
 		OpenVinoData::Infer(
@@ -72,6 +76,24 @@ public:
 			int* width,
 			int* height,
 			float* out);
+
+	/**
+	 * @brief Call infer using image raw data
+	 * @param input, image raw data
+	 * @param inwidth, width of image
+	 * @param inheight, height of image
+	 * @param outwidth, width of image after style transfer
+	 * @param outheight, height of image after style transfer
+	 * @param out, image raw data after style transfer
+	 */
+	bool
+		OpenVinoData::Infer(
+			unsigned char* input,
+			int inwidth,
+			int inheight,
+			int* outwidth,
+			int* outheight,
+			unsigned char* output);
 
 private:
 	static std::vector<std::string> LoadLabels(
