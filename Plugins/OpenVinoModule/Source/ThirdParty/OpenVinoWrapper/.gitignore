@@ -1,16 +1,12 @@
 *.cmake
 CMakeCache.txt
 CMakeSettings.json
-cpuid.txt
 
 CMakeFiles/
-ie_cpu_extension/
+
 out/
 x64/
 OpenVinoWrapper.dir/
 Debug/
 Release/
-inference_engine/
-opencv/
-openvx/
 *.vcxproj*
