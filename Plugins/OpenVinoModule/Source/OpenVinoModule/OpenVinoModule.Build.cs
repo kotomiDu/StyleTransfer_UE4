@@ -59,8 +59,8 @@ public class OpenVinoModule : ModuleRules
 
 		if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
-			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "../ThirdParty/OpenVinoWrapper/Release", "OpenVinoWrapper.lib"));
-			RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "../ThirdParty/OpenVinoWrapper/Release", "OpenVinoWrapper.dll"));
+			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "../ThirdParty/OpenVinoWrapper/bin", "OpenVinoWrapper.lib"));
+			RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "../ThirdParty/OpenVinoWrapper/bin", "OpenVinoWrapper.dll"));
 		}
 		else
 		{
