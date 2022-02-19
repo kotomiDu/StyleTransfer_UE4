@@ -34,7 +34,7 @@ public class OpenVinoWrapper : ModuleRules
 		if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
             // Add the import library
-            PublicLibraryPaths.Add(Path.Combine(ModuleDirectory, "Release"));
+            PublicLibraryPaths.Add(Path.Combine(ModuleDirectory, "bin"));
 			PublicAdditionalLibraries.Add("OpenVinoWrapper.lib");
 
             CopyOpenVinoDll();
@@ -63,7 +63,7 @@ public class OpenVinoWrapper : ModuleRules
 
     void CopyOpenVinoDll()
     {
-        var openVinoDllPath = Path.Combine(ModuleDirectory, "Release", "OpenVinoWrapper.dll");
+        var openVinoDllPath = Path.Combine(ModuleDirectory, "bin", "OpenVinoWrapper.dll");
         if (!File.Exists(openVinoDllPath))
             throw new FileNotFoundException(openVinoDllPath);
 
