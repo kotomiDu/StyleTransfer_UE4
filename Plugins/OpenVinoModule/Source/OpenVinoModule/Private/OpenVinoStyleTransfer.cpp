@@ -189,12 +189,12 @@ void UOpenVinoStyleTransfer::BeginStyleTransferFromTexture(UObject* Outer, TArra
 			if( OpenVino_Infer_FromTexture(tmp_buffer.GetData(), inwidth, inheight, &outWidth, &outHeight, buffer.GetData()) )
 			{
 				index = 0;
-				for (FColor color : rgba_buffer)
+				for(int i = 0; i < outWidth * outHeight; i++)
 				{
-					color.B = buffer[index];
-					color.G = buffer[index + 1];
-					color.R = buffer[index + 2];
-					color.A = 255;
+					rgba_buffer[i].B = buffer[index];
+					rgba_buffer[i].G = buffer[index + 1];
+					rgba_buffer[i].R = buffer[index + 2];
+					rgba_buffer[i].A = 255;
 					index = index + 3;
 				}
 				Result.SetValue(rgba_buffer.GetData());
