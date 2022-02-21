@@ -36,8 +36,6 @@ class OpenVinoData
 	InferenceEngine::ExecutableNetwork executable_network;
 	// Input and output names for OpenVino algorithm
 	std::string input_name, output_name;
-	// Loaded labels from labels file
-	std::vector<std::string> labels;
 
 public:
 	OpenVinoData() = default;
@@ -52,15 +50,8 @@ public:
 	 */
 	void Initialize(
 		std::string modelXmlFilePath,
-		std::string modelBinFilePath,
-		std::string modelLabelFilePath);
+		std::string modelBinFilePath);
 
-	/**
-	 * @brief Call infer using loaded model files
-	 * @param filePath
-	 */
-	std::string Infer(
-		std::string filePath);
 
 	/**
 	 * @brief Call infer using loaded model files
@@ -95,7 +86,4 @@ public:
 			int* outheight,
 			unsigned char* output);
 
-private:
-	static std::vector<std::string> LoadLabels(
-		std::string modelLabelFilePath);
 };

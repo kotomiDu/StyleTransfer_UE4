@@ -67,13 +67,11 @@ bool
 UOpenVinoStyleTransfer::Initialize(
 	FString xmlFilePath,
 	FString binFilePath,
-	FString labelsFilePath,
 	FString& retLog)
 {
 	// First, test if files passed exist, it is better to catch it early:
 	if (!TestFileExists(xmlFilePath) ||
-		!TestFileExists(binFilePath) ||
-		!TestFileExists(labelsFilePath))
+		!TestFileExists(binFilePath) )
 	{
 		retLog = TEXT("One or more files passed to Initialize don't exit");
 		return false;
@@ -81,8 +79,7 @@ UOpenVinoStyleTransfer::Initialize(
 
 	auto ret = OpenVino_Initialize(
 		TCHAR_TO_ANSI(*xmlFilePath),
-		TCHAR_TO_ANSI(*binFilePath),
-		TCHAR_TO_ANSI(*labelsFilePath));
+		TCHAR_TO_ANSI(*binFilePath));
 
 	if (!ret)
 	{

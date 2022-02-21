@@ -49,14 +49,12 @@ DLLEXPORT
 bool __cdecl 
 OpenVino_Initialize(
 	LPCSTR modelXmlFilePath,
-	LPCSTR modelBinFilePath,
-	LPCSTR modelLabelFilePath)
+	LPCSTR modelBinFilePath)
 {
 	try
 	{
 		if (modelXmlFilePath == nullptr ||
-			modelBinFilePath == nullptr ||
-			modelLabelFilePath == nullptr)
+			modelBinFilePath == nullptr)
 			throw invalid_argument("One of the file paths passed was null");
 
 		last_error.clear();
@@ -64,7 +62,7 @@ OpenVino_Initialize(
 		// OpenVinoData structure does actual processing:
 		auto ptr = std::make_unique<OpenVinoData>();
 		// Forward initialization to OpenVinoData:
-		ptr->Initialize(modelXmlFilePath, modelBinFilePath, modelLabelFilePath);
+		ptr->Initialize(modelXmlFilePath, modelBinFilePath);
 		// Save it for use in later calls:
 		initializedData = std::move(ptr);
 
@@ -84,59 +82,7 @@ OpenVino_Initialize(
 	}
 }
 
-/*
- * @brief This method is used to infer results, based on loaded model (see "OpenVino_Initialize")
- * and based on image loaded from "filePath".
- * @param filePath path to the file to be analysed
- * @param result called-allocated buffer where result string will be copied to
- * @param maxResultSize maximum size of result buffer
- * @return true if call is successfull or false if not
- */
-DLLEXPORT
-bool __cdecl
-OpenVino_Infer_FromPath(
-	char* filePath,
-	char* result,
-	size_t maxResultSize)
-{
-	try
-	{
-		if (!initializedData)
-			throw std::invalid_argument("OpenVINO has not been initialized");
 
-		if (filePath == nullptr)
-			throw std::invalid_argument("File path passed was null");
-
-		if (result == nullptr)
-			throw std::invalid_argument("Argument result passed was null");
-
-		if (maxResultSize == 0)
-			throw std::invalid_argument("Argument maxResultSize was 0");
-
-		// Actual Infer call passed to OpenVinoData
-		auto ret = initializedData->Infer(filePath);
-
-		// Copy the result, provided enough space was available:
-		if (ret.length() >= maxResultSize)
-			throw invalid_argument("Result size was smaller then expected");
-
-		strcpy_s(result, maxResultSize, ret.c_str());
-
-		return true;
-	}
-	catch (exception& ex)
-	{
-		last_error = ex.what();
-
-		return false;
-	}
-	catch (...)
-	{
-		last_error = "General error";
-
-		return false;
-	}
-}
 /*
 * @brief This method is used to infer results, based on loaded model (see "OpenVino_Initialize")
 * and based on texture rendered by engine.

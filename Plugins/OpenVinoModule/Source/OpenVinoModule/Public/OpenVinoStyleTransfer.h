@@ -26,7 +26,7 @@ public:
 	 * @return message saying that plugin has been initialized or not
 	 */
 	UFUNCTION(BlueprintCallable, Category = "OpenVINO Plugin")
-		bool Initialize(FString xmlFilePath, FString binFilePath, FString labelsFilePath, FString& retLog);
+		bool Initialize(FString xmlFilePath, FString binFilePath, FString& retLog);
 
 	UFUNCTION(BlueprintCallable, Category = "OpenVINO Plugin")
 		UTexture2D* GetTransferedTexture();

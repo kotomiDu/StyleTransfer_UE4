@@ -55,8 +55,7 @@ extern "C"
 	*/
 	DLLEXPORT bool OpenVino_Initialize(
 		const char* modelXmlFilePath,
-		const char* modelBinFilePath,
-		const char* modelLabelFilePath);
+		const char* modelBinFilePath);
 
 	/*
 	 * @brief This method is used to infer results, based on loaded model (see "OpenVino_Initialize")
