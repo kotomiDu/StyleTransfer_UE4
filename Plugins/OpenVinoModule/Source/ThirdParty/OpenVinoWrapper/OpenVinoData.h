@@ -50,7 +50,9 @@ public:
 	 */
 	void Initialize(
 		std::string modelXmlFilePath,
-		std::string modelBinFilePath);
+		std::string modelBinFilePath,
+		int inferWidth,
+		int inferHeight);
 
 
 	/**
@@ -84,6 +86,7 @@ public:
 			int inheight,
 			int* outwidth,
 			int* outheight,
-			unsigned char* output);
+			unsigned char* output,
+			bool debug_flag);
 
 };

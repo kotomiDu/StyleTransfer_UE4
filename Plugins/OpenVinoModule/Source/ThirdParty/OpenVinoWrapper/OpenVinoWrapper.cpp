@@ -49,7 +49,9 @@ DLLEXPORT
 bool __cdecl 
 OpenVino_Initialize(
 	LPCSTR modelXmlFilePath,
-	LPCSTR modelBinFilePath)
+	LPCSTR modelBinFilePath,
+	int inferWidth,
+	int inferHeight)
 {
 	try
 	{
@@ -62,7 +64,7 @@ OpenVino_Initialize(
 		// OpenVinoData structure does actual processing:
 		auto ptr = std::make_unique<OpenVinoData>();
 		// Forward initialization to OpenVinoData:
-		ptr->Initialize(modelXmlFilePath, modelBinFilePath);
+		ptr->Initialize(modelXmlFilePath, modelBinFilePath, inferWidth, inferHeight);
 		// Save it for use in later calls:
 		initializedData = std::move(ptr);
 
@@ -97,7 +99,7 @@ OpenVino_Initialize(
 DLLEXPORT
 bool __cdecl
 OpenVino_Infer_FromTexture(
-	unsigned char* input, int inwidth, int inheight, int* outwidth, int* outheight, unsigned char* out)
+	unsigned char* input, int inwidth, int inheight, int* outwidth, int* outheight, unsigned char* out, bool debug_flag)
 {
 	try
 	{
@@ -108,7 +110,7 @@ OpenVino_Infer_FromTexture(
 			throw std::invalid_argument("File path passed was null");*/
 
 		// Actual Infer call passed to OpenVinoData
-		initializedData->Infer(input, inwidth, inheight, outwidth, outheight, out);
+		initializedData->Infer(input, inwidth, inheight, outwidth, outheight, out, debug_flag);
 
 		return true;
 	}

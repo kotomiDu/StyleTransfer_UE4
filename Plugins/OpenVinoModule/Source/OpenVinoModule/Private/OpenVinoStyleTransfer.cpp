@@ -13,12 +13,12 @@ using namespace std;
 // open vino style transfer width
 static TAutoConsoleVariable<int32> CVarTransferWidth(
 	TEXT("r.OVST.Width"),
-	224,
+	512,
 	TEXT("Set Openvino Style transfer rect width."));
 
 static TAutoConsoleVariable<int32> CVarTransferHeight(
 	TEXT("r.OVST.Height"),
-	224,
+	512,
 	TEXT("Set Openvino Style transfer rect height."));
 
 
@@ -79,7 +79,9 @@ UOpenVinoStyleTransfer::Initialize(
 
 	auto ret = OpenVino_Initialize(
 		TCHAR_TO_ANSI(*xmlFilePath),
-		TCHAR_TO_ANSI(*binFilePath));
+		TCHAR_TO_ANSI(*binFilePath),
+		infer_width,
+		infer_height);
 
 	if (!ret)
 	{
@@ -183,7 +185,7 @@ void UOpenVinoStyleTransfer::BeginStyleTransferFromTexture(UObject* Outer, TArra
 				tmp_buffer[index + 2] = color.R;
 				index = index + 3;
 			}
-			if( OpenVino_Infer_FromTexture(tmp_buffer.GetData(), inwidth, inheight, &outWidth, &outHeight, buffer.GetData()) )
+			if( OpenVino_Infer_FromTexture(tmp_buffer.GetData(), inwidth, inheight, &outWidth, &outHeight, buffer.GetData(),debug_flag) )
 			{
 				index = 0;
 				for(int i = 0; i < outWidth * outHeight; i++)

@@ -55,7 +55,9 @@ extern "C"
 	*/
 	DLLEXPORT bool OpenVino_Initialize(
 		const char* modelXmlFilePath,
-		const char* modelBinFilePath);
+		const char* modelBinFilePath,
+		int inferWidth,
+		int inferHeight);
 
 	/*
 	 * @brief This method is used to infer results, based on loaded model (see "OpenVino_Initialize")
@@ -82,7 +84,7 @@ extern "C"
 	* @return true if call is successfull or false if not
 	*/
 	DLLEXPORT bool OpenVino_Infer_FromTexture(
-		unsigned char* input, int inwidth, int inheight, int* width, int* height, unsigned char* output);
+		unsigned char* input, int inwidth, int inheight, int* width, int* height, unsigned char* output, bool debug_flag);
 
 	/*
 	* @brief This method is used to infer results, based on loaded model (see "OpenVino_Initialize")

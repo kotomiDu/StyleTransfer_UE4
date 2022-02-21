@@ -63,6 +63,9 @@ private:
 
 	int last_width;
 	int last_height;
+	int infer_width = 512;
+	int infer_height = 512;
+	bool debug_flag = false;
 
 	TArray<FColor> fb_data;
 	TArray<BYTE> buffer;
