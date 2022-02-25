@@ -73,6 +73,7 @@ private:
 	TArray<FColor> rgba_buffer;
 
 	UTexture2D* out_tex;
+	class SStyleTransferResultDialog* dialog;
 
 public:
 	FDelegateHandle m_OnBackBufferReadyToPresent;
@@ -86,4 +87,29 @@ public:
 	//解绑获取BackBuffer数据的回调函数
 	UFUNCTION(BlueprintCallable, Category = "OpenVINO Plugin")
 		void UnBindBackbufferCallback();
+};
+
+//////////////////////////////////////////////////////////////////////////
+// SPaperExtractSpritesDialog
+
+class SStyleTransferResultDialog : public SCompoundWidget
+{
+public:
+	SLATE_BEGIN_ARGS(SStyleTransferResultDialog){}
+	SLATE_END_ARGS()
+
+	// Constructs this widget with InArgs
+	void Construct(const FArguments& InArgs);
+
+	virtual ~SStyleTransferResultDialog();
+
+	// Show the dialog, returns true if successfully extracted sprites
+	static SStyleTransferResultDialog* ShowWindow(int outputWidth, int outputHeight);
+
+	void UpdateTexture(UTexture2D* SourceTexture);
+
+private:
+	SImage* image;
+
+	TSharedPtr<FSlateDynamicImageBrush> ImageBrush;
 };

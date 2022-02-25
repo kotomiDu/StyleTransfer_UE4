@@ -32,7 +32,8 @@ public class OpenVinoModule : ModuleRules
 				"InputCore",
 				"Projects",
 				"OpenVinoWrapper",
-				"ImageWrapper", "RHI", "RenderCore"
+				"ImageWrapper", "RHI", "RenderCore",
+				"EditorStyle"
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);

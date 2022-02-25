@@ -3,11 +3,13 @@
 
 #include "OpenVinoStyleTransfer.h"
 #include "ThirdParty\OpenVinoWrapper\OpenVinoWrapper.h"
+#include "EditorStyleSet.h"
 
 #include <vector>
 #include <string>
 #include "ImageUtils.h"
 #include "Slate/SceneViewport.h"
+#include "Widgets/Images/SImage.h"
 using namespace std;
 
 // open vino style transfer width
@@ -91,6 +93,10 @@ UOpenVinoStyleTransfer::Initialize(
 	{
 		retLog = TEXT("OpenVino has been initialized.");
 	}
+
+	// new window
+	dialog = SStyleTransferResultDialog::ShowWindow(last_width, last_height);
+
 	return ret;
 }
 
@@ -103,13 +109,10 @@ void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, enum ELevelTick Tick
 {
 	// begin transfer from texture
 	BeginStyleTransferFromTexture(this, fb_data, last_width, last_height);
-
-	// write back to framebuffer
 }
 
 void  UOpenVinoStyleTransfer::BindBackbufferCallback()
 {
-
 	if (FSlateApplication::IsInitialized())
 	{
 		m_OnBackBufferReadyToPresent.Reset();
@@ -124,8 +127,12 @@ void UOpenVinoStyleTransfer::UnBindBackbufferCallback()
 	{
 		FSlateApplication::Get().GetRenderer()->OnBackBufferReadyToPresent().Remove(m_OnBackBufferReadyToPresent);
 	}
+	if (out_tex != nullptr)
+	{
+		out_tex->RemoveFromRoot();
+		out_tex = nullptr;
+	}
 }
-
 
 void UOpenVinoStyleTransfer::OnBackBufferReady_RenderThread(SWindow& SlateWindow, const FTexture2DRHIRef& BackBuffer)
 {
@@ -218,10 +225,11 @@ void UOpenVinoStyleTransfer::BeginStyleTransferFromTexture(UObject* Outer, TArra
 				if (out_tex != nullptr)
 				{
 					out_tex->RemoveFromRoot();
-					out_tex->ConditionalBeginDestroy();
 					out_tex = nullptr;
 				}
 				out_tex = CreateTexture(transfered, outWidth, outHeight);
+				out_tex->AddToRoot();
+				dialog->UpdateTexture(out_tex);
 			}
 			else
 			{
@@ -297,4 +305,55 @@ UOpenVinoStyleTransfer::GetAndLogLastError()
 	UE_LOG(LogTemp, Error, TEXT("OpenVino_GetLastError: %s"), *lastError);
 
 	return lastError;
+}
+
+// SStyleTransferResultWin
+
+void SStyleTransferResultDialog::Construct(const FArguments& InArgs)
+{
+	TSharedRef<SImage> NewImage = SNew(SImage).Image(FEditorStyle::GetBrush("Icons.Refresh"));
+	image = &NewImage.Get();
+
+	ChildSlot
+	[
+		NewImage
+	];
+}
+
+SStyleTransferResultDialog::~SStyleTransferResultDialog()
+{
+}
+
+SStyleTransferResultDialog* SStyleTransferResultDialog::ShowWindow(int outputWidth, int outputHeight)
+{
+	// new window
+	const FText TitleText = NSLOCTEXT("StyleTransfer", "Result", "Show");
+	// Create the window to pick the class
+	TSharedRef<SWindow> TransWindow = SNew(SWindow)
+		.Title(TitleText)
+		.SizingRule(ESizingRule::UserSized)
+		.ClientSize(FVector2D(outputWidth, outputHeight))
+		.AutoCenter(EAutoCenter::PreferredWorkArea)
+		.SupportsMinimize(false);
+
+	TSharedRef<SStyleTransferResultDialog> TransResultDialog = SNew(SStyleTransferResultDialog);
+
+	TransWindow->SetContent(TransResultDialog);
+	TSharedPtr<SWindow> RootWindow = FGlobalTabmanager::Get()->GetRootWindow();
+	if (RootWindow.IsValid())
+	{
+		FSlateApplication::Get().AddWindowAsNativeChild(TransWindow, RootWindow.ToSharedRef());
+	}
+	else
+	{
+		FSlateApplication::Get().AddWindow(TransWindow);
+	}
+
+	return &TransResultDialog.Get();
+}
+
+void SStyleTransferResultDialog::UpdateTexture(UTexture2D* SourceTexture)
+{
+	ImageBrush = MakeShareable(new FSlateDynamicImageBrush(SourceTexture, FVector2D(SourceTexture->GetSizeX(), SourceTexture->GetSizeY()), FName(SourceTexture->GetName())));
+	image->SetImage(ImageBrush.Get());
 }
