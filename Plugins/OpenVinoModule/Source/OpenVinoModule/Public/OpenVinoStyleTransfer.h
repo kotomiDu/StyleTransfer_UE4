@@ -29,6 +29,9 @@ public:
 		bool Initialize(FString xmlFilePath, FString binFilePath, FString& retLog);
 
 	UFUNCTION(BlueprintCallable, Category = "OpenVINO Plugin")
+		void Release();
+
+	UFUNCTION(BlueprintCallable, Category = "OpenVINO Plugin")
 		UTexture2D* GetTransferedTexture();
 
 	/**
@@ -45,7 +48,17 @@ private:
 	UTexture2D* CreateTexture(FColor* data, int width, int height);
 	void UpdateTexture(UTexture2D* tex, FColor* data);
 
-	void BeginStyleTransferFromTexture(UObject* Outer, TArray<FColor>& TextureData, int Inwidth, int Inheight);
+	// transfer style to utexture
+	// if texture created, return true
+	// else return false
+	bool StyleTransferToTexture(UObject* Outer, TArray<FColor>& TextureData, int Inwidth, int Inheight);
+
+	// bind callback for frame buffer capture
+	void BindBackbufferCallback();
+	void UnBindBackbufferCallback();
+
+	// on resize output width/height
+	bool OnResizeOutput(int width, int height);
 
 	/**
 	 * @brief Returns last error from OpenVino, logging it first to UE's log system
@@ -56,16 +69,18 @@ private:
 	/** Holds the future value which represents the asynchronous loading operation. */
 	TFuture<FColor*> Future;
 
-	/*UTexture2D* GetTextureFromStyleTransfer(UObject* Outer, FString filePath);*/
-
+	// output
 	IConsoleVariable* transfer_width;
 	IConsoleVariable* transfer_height;
+	int last_out_width;
+	int last_out_height;
 
-	int last_width;
-	int last_height;
-	int infer_width = 512;
-	int infer_height = 512;
-	bool debug_flag = false;
+	// input
+	FVector2D input_origin;
+	FIntPoint last_input_size;
+	FIntPoint input_size;
+
+	bool debug_flag;
 
 	TArray<FColor> fb_data;
 	TArray<BYTE> buffer;
@@ -73,20 +88,17 @@ private:
 	TArray<FColor> rgba_buffer;
 
 	UTexture2D* out_tex;
+
 	class SStyleTransferResultDialog* dialog;
+	SWindow* window;
+
+	FString xml_file_path;
+	FString bin_file_path;
 
 public:
 	FDelegateHandle m_OnBackBufferReadyToPresent;
 
 	void OnBackBufferReady_RenderThread(SWindow& SlateWindow, const FTexture2DRHIRef& BackBuffer);
-
-	//注册获取BackBuffer数据的回调函数
-	UFUNCTION(BlueprintCallable, Category = "OpenVINO Plugin")
-		void BindBackbufferCallback();
-
-	//解绑获取BackBuffer数据的回调函数
-	UFUNCTION(BlueprintCallable, Category = "OpenVINO Plugin")
-		void UnBindBackbufferCallback();
 };
 
 //////////////////////////////////////////////////////////////////////////
@@ -104,7 +116,7 @@ public:
 	virtual ~SStyleTransferResultDialog();
 
 	// Show the dialog, returns true if successfully extracted sprites
-	static SStyleTransferResultDialog* ShowWindow(int outputWidth, int outputHeight);
+	static SStyleTransferResultDialog* ShowWindow(int outputWidth, int outputHeight, SWindow*& showWindow);
 
 	void UpdateTexture(UTexture2D* SourceTexture);
 

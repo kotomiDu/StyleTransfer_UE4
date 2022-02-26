@@ -23,7 +23,6 @@ static TAutoConsoleVariable<int32> CVarTransferHeight(
 	512,
 	TEXT("Set Openvino Style transfer rect height."));
 
-
 /*
  * @brief Tests if file passed exists, and logs error if it doesn't
  * @param filePath to be tested
@@ -45,6 +44,9 @@ bool TestFileExists(FString filePath)
 UOpenVinoStyleTransfer::UOpenVinoStyleTransfer()
 	: transfer_width(nullptr)
 	, transfer_height(nullptr)
+	, debug_flag(false)
+	, dialog(nullptr)
+	, window(nullptr)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -54,8 +56,8 @@ UOpenVinoStyleTransfer::UOpenVinoStyleTransfer()
 	transfer_width = IConsoleManager::Get().FindConsoleVariable(TEXT("r.OVST.Width"));
 	transfer_height = IConsoleManager::Get().FindConsoleVariable(TEXT("r.OVST.Height"));
 
-	last_width = transfer_width->GetInt();
-	last_height = transfer_height->GetInt();
+	input_size.X = input_size.Y = 0;
+	last_input_size.X = last_input_size.Y = 0;
 }
 
 /**
@@ -79,25 +81,36 @@ UOpenVinoStyleTransfer::Initialize(
 		return false;
 	}
 
-	auto ret = OpenVino_Initialize(
-		TCHAR_TO_ANSI(*xmlFilePath),
-		TCHAR_TO_ANSI(*binFilePath),
-		infer_width,
-		infer_height);
+	int width = transfer_width->GetInt();
+	int height = transfer_height->GetInt();
+	last_out_width = width;
+	last_out_height = height;
 
-	if (!ret)
+	xml_file_path = xmlFilePath;
+	bin_file_path = binFilePath;
+
+	// init window with width/height
+	if (!OnResizeOutput(width, height))
 	{
-		retLog = TEXT("OpenVino has failed to initialize: ") ;
-	}
-	else
-	{
-		retLog = TEXT("OpenVino has been initialized.");
+		retLog = TEXT("OpenVino has failed to initialize: ");
+		return false;
 	}
 
-	// new window
-	dialog = SStyleTransferResultDialog::ShowWindow(last_width, last_height);
+	retLog = TEXT("OpenVino has been initialized.");
 
-	return ret;
+	// bind callback
+	BindBackbufferCallback();
+
+	return true;
+}
+
+void UOpenVinoStyleTransfer::Release()
+{
+	// unbind buffer
+	UnBindBackbufferCallback();
+
+	// release
+	OnResizeOutput(0, 0);
 }
 
 UTexture2D* UOpenVinoStyleTransfer::GetTransferedTexture()
@@ -105,10 +118,66 @@ UTexture2D* UOpenVinoStyleTransfer::GetTransferedTexture()
 	return out_tex;
 }
 
+bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height)
+{
+	if (window != nullptr)
+	{
+		window->DestroyWindowImmediately();
+		window = nullptr;
+		dialog = nullptr;
+	}
+
+	if (out_tex != nullptr)
+	{
+		//out_tex->RemoveFromRoot();
+		out_tex = nullptr;
+	}
+
+	if (width == 0 || height == 0)
+		return true;
+
+	if (!OpenVino_Initialize(TCHAR_TO_ANSI(*xml_file_path), TCHAR_TO_ANSI(*xml_file_path), width, height))
+		return false;
+
+	// initialize buffer size
+	size_t size = width * height;
+	size_t buffer_size = size * 3;
+	buffer.Reset(buffer_size);
+	buffer.SetNum(buffer_size);
+	rgba_buffer.Reset(size);
+	rgba_buffer.SetNum(size);
+
+	// new window
+	dialog = SStyleTransferResultDialog::ShowWindow(width, height, window);
+
+	return true;
+}
+
 void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	// begin transfer from texture
-	BeginStyleTransferFromTexture(this, fb_data, last_width, last_height);
+	// reset input tmp process buffer
+	if (input_size.X != 0 && input_size.Y != 0 && input_size != last_input_size)
+	{
+		size_t buffer_size = input_size.X * input_size.Y * 3;
+		tmp_buffer.Reset(buffer_size);
+		tmp_buffer.SetNum(buffer_size);
+	}
+	last_input_size = input_size;
+
+	// output buffer change
+	if (transfer_width->GetInt() != last_out_width || transfer_height->GetInt() != last_out_height)
+	{
+		last_out_width = transfer_width->GetInt();
+		last_out_height = transfer_height->GetInt();
+		OnResizeOutput(last_out_width, last_out_height);
+	}
+
+	// begin transfer from captured data to texture via cpu pass
+	if (StyleTransferToTexture(this, fb_data, input_size.X, input_size.Y))
+	{
+		// show texture in dialog
+		dialog->UpdateTexture(out_tex);
+	}
 }
 
 void  UOpenVinoStyleTransfer::BindBackbufferCallback()
@@ -127,35 +196,10 @@ void UOpenVinoStyleTransfer::UnBindBackbufferCallback()
 	{
 		FSlateApplication::Get().GetRenderer()->OnBackBufferReadyToPresent().Remove(m_OnBackBufferReadyToPresent);
 	}
-	if (out_tex != nullptr)
-	{
-		out_tex->RemoveFromRoot();
-		out_tex = nullptr;
-	}
 }
 
 void UOpenVinoStyleTransfer::OnBackBufferReady_RenderThread(SWindow& SlateWindow, const FTexture2DRHIRef& BackBuffer)
 {
-	// Read the size we need
-	int width = transfer_width->GetInt();
-	int height = transfer_height->GetInt();
-
-	if (width == 0 || height == 0)
-		return;
-
-	if (buffer.Num() == 0 || last_width != width || last_height != height)
-	{
-		size_t buffer_size = width * height * 3;
-		buffer.Reset(buffer_size);
-		buffer.SetNum(buffer_size);
-		tmp_buffer.Reset(buffer_size);
-		tmp_buffer.SetNum(buffer_size);
-		rgba_buffer.Reset(width * height);
-		rgba_buffer.SetNum(width * height);
-	}
-	last_width = width;
-	last_height = height;
-
 	UGameViewportClient* gameViewport = GetWorld()->GetGameViewport();
 	FSceneViewport* vp = gameViewport->GetGameViewport();
 	SWindow* gameWin = gameViewport->GetWindow().Get();
@@ -165,23 +209,28 @@ void UOpenVinoStyleTransfer::OnBackBufferReady_RenderThread(SWindow& SlateWindow
 
 	FVector2D gameWinPos = gameWin->GetPositionInScreen();
 	FVector2D vpPos = vp->GetCachedGeometry().GetAbsolutePosition();
-	FVector2D origin = vpPos - gameWinPos;
 
-	FIntRect Rect(origin.X, origin.Y, origin.X + width, origin.Y + height);
-
-	FTexture2DRHIRef GameBuffer = BackBuffer;
+	// get input and reset tmp process buffer
+	input_origin = vpPos - gameWinPos;
+	input_size = vp->GetSize();
+	
+	FIntRect Rect(input_origin.X, input_origin.Y, input_origin.X + input_size.X, input_origin.Y + input_size.Y);
 	FRHICommandListImmediate& RHICmdList = FRHICommandListExecutor::GetImmediateCommandList();
 
 	// Get out data
-	RHICmdList.ReadSurfaceData(GameBuffer, Rect, fb_data, FReadSurfaceDataFlags(RCM_UNorm));
+	RHICmdList.ReadSurfaceData(BackBuffer, Rect, fb_data, FReadSurfaceDataFlags(RCM_UNorm));
 }
 
-void UOpenVinoStyleTransfer::BeginStyleTransferFromTexture(UObject* Outer, TArray<FColor>& TextureData, int inwidth, int inheight)
+bool UOpenVinoStyleTransfer::StyleTransferToTexture(UObject* Outer, TArray<FColor>& TextureData, int inwidth, int inheight)
 {
 	TPromise<FColor*> Result;
 	FString resultlog;
-	int outWidth, outHeight;
-	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [Outer, TextureData, inwidth, inheight, &resultlog, &outWidth, &outHeight, &Result, this]()
+	
+	// Read the size we need
+	int width = transfer_width->GetInt();
+	int height = transfer_height->GetInt();
+
+	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [Outer, TextureData, inwidth, inheight, &resultlog, &Result, this]()
 		{
 			
 			int index = 0;
@@ -192,7 +241,8 @@ void UOpenVinoStyleTransfer::BeginStyleTransferFromTexture(UObject* Outer, TArra
 				tmp_buffer[index + 2] = color.R;
 				index = index + 3;
 			}
-			if( OpenVino_Infer_FromTexture(tmp_buffer.GetData(), inwidth, inheight, &outWidth, &outHeight, buffer.GetData(),debug_flag) )
+			int outWidth, outHeight;
+			if( OpenVino_Infer_FromTexture(tmp_buffer.GetData(), inwidth, inheight, &outWidth, &outHeight, buffer.GetData(), debug_flag) )
 			{
 				index = 0;
 				for(int i = 0; i < outWidth * outHeight; i++)
@@ -215,21 +265,19 @@ void UOpenVinoStyleTransfer::BeginStyleTransferFromTexture(UObject* Outer, TArra
 	);
 	
 	Future = Result.GetFuture();
+	bool ret = false;
 	if (Future.IsValid())
 	{
 		FColor* transfered = Future.Get();
 		if (transfered != nullptr)
 		{
-			if (out_tex == nullptr || outWidth != out_tex->GetSizeX() || outHeight != out_tex->GetSizeY())
+			if (out_tex == nullptr)
 			{
-				if (out_tex != nullptr)
-				{
-					out_tex->RemoveFromRoot();
-					out_tex = nullptr;
-				}
-				out_tex = CreateTexture(transfered, outWidth, outHeight);
+				out_tex = CreateTexture(transfered, width, height);
 				out_tex->AddToRoot();
-				dialog->UpdateTexture(out_tex);
+
+				// texture created
+				ret = true;
 			}
 			else
 			{
@@ -243,6 +291,7 @@ void UOpenVinoStyleTransfer::BeginStyleTransferFromTexture(UObject* Outer, TArra
 			this->OnStyleTransferComplete.Broadcast(resultlog, nullptr);
 		}
 	}
+	return ret;
 }
 
 UTexture2D* UOpenVinoStyleTransfer::CreateTexture(FColor* data, int width, int height)
@@ -324,7 +373,7 @@ SStyleTransferResultDialog::~SStyleTransferResultDialog()
 {
 }
 
-SStyleTransferResultDialog* SStyleTransferResultDialog::ShowWindow(int outputWidth, int outputHeight)
+SStyleTransferResultDialog* SStyleTransferResultDialog::ShowWindow(int outputWidth, int outputHeight, SWindow*& showWindow)
 {
 	// new window
 	const FText TitleText = NSLOCTEXT("StyleTransfer", "Result", "Show");
@@ -348,7 +397,7 @@ SStyleTransferResultDialog* SStyleTransferResultDialog::ShowWindow(int outputWid
 	{
 		FSlateApplication::Get().AddWindow(TransWindow);
 	}
-
+	showWindow = &TransWindow.Get();
 	return &TransResultDialog.Get();
 }
 
