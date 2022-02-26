@@ -154,6 +154,10 @@ bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height)
 
 	// new window
 	dialog = SStyleTransferResultDialog::ShowWindow(width, height, window);
+	window->SetOnWindowClosed(FOnWindowClosed::CreateLambda([this](const TSharedRef<SWindow>& Window)
+		{
+			this->ClearWindow();
+		}));
 
 	return true;
 }

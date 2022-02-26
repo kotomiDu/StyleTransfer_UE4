@@ -101,6 +101,7 @@ public:
 	FDelegateHandle m_OnBackBufferReadyToPresent;
 
 	void OnBackBufferReady_RenderThread(SWindow& SlateWindow, const FTexture2DRHIRef& BackBuffer);
+	void ClearWindow() { window = nullptr; }
 };
 
 //////////////////////////////////////////////////////////////////////////
