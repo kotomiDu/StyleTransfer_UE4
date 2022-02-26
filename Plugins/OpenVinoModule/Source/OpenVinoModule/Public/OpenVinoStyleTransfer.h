@@ -6,6 +6,8 @@
 #include "Components/ActorComponent.h"
 #include "OpenVinoStyleTransfer.generated.h"
 
+DECLARE_LOG_CATEGORY_EXTERN(LogStyleTransfer, Log, All);
+
 /** Delegate for the event fired when style transfer completes */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FStyleTransferComplete, const FString&, result, UTexture2D*, StyleTexture);
 

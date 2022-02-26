@@ -12,6 +12,8 @@
 #include "Widgets/Images/SImage.h"
 using namespace std;
 
+DEFINE_LOG_CATEGORY(LogStyleTransfer);
+
 // open vino style transfer width
 static TAutoConsoleVariable<int32> CVarTransferWidth(
 	TEXT("r.OVST.Width"),
@@ -34,7 +36,7 @@ bool TestFileExists(FString filePath)
 	if (IFileManager::Get().FileExists(*filePath))
 		return true;
 
-	UE_LOG(LogTemp, Error, TEXT("Could not find file: %s"), *filePath);
+	UE_LOG(LogStyleTransfer, Error, TEXT("Could not find file: %s"), *filePath);
 
 	return false;
 }
@@ -96,7 +98,8 @@ UOpenVinoStyleTransfer::Initialize(
 		return false;
 	}
 
-	retLog = TEXT("OpenVino has been initialized.");
+	retLog = TEXT("Style transfer has been initialized.");
+	UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer has been initialized!"));
 
 	// bind callback
 	BindBackbufferCallback();
@@ -136,8 +139,10 @@ bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height)
 	if (width == 0 || height == 0)
 		return true;
 
+	UE_LOG(LogStyleTransfer, Log, TEXT("OpenVino initialize begin!"));
 	if (!OpenVino_Initialize(TCHAR_TO_ANSI(*xml_file_path), TCHAR_TO_ANSI(*xml_file_path), width, height))
 		return false;
+	UE_LOG(LogStyleTransfer, Log, TEXT("OpenVino initialize successful!"));
 
 	// initialize buffer size
 	size_t size = width * height;
@@ -360,7 +365,7 @@ UOpenVinoStyleTransfer::GetAndLogLastError()
 
 void SStyleTransferResultDialog::Construct(const FArguments& InArgs)
 {
-	TSharedRef<SImage> NewImage = SNew(SImage).Image(FEditorStyle::GetBrush("Icons.Refresh"));
+	TSharedRef<SImage> NewImage = SNew(SImage).Image(nullptr);
 	image = &NewImage.Get();
 
 	ChildSlot
@@ -382,9 +387,8 @@ SStyleTransferResultDialog* SStyleTransferResultDialog::ShowWindow(int outputWid
 		.Title(TitleText)
 		.SizingRule(ESizingRule::UserSized)
 		.ClientSize(FVector2D(outputWidth, outputHeight))
-		.AutoCenter(EAutoCenter::PreferredWorkArea)
+		//.AutoCenter(EAutoCenter::PreferredWorkArea)
 		.SupportsMinimize(false);
-
 	TSharedRef<SStyleTransferResultDialog> TransResultDialog = SNew(SStyleTransferResultDialog);
 
 	TransWindow->SetContent(TransResultDialog);
