@@ -208,6 +208,8 @@ void  UOpenVinoStyleTransfer::BindBackbufferCallback()
 		m_OnBackBufferReadyToPresent.Reset();
 
 		m_OnBackBufferReadyToPresent = FSlateApplication::Get().GetRenderer()->OnBackBufferReadyToPresent().AddUObject(this, &UOpenVinoStyleTransfer::OnBackBufferReady_RenderThread);
+
+		UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer bind back buffer copy callback!"));
 	}
 }
 
@@ -216,14 +218,22 @@ void UOpenVinoStyleTransfer::UnBindBackbufferCallback()
 	if (m_OnBackBufferReadyToPresent.IsValid())
 	{
 		FSlateApplication::Get().GetRenderer()->OnBackBufferReadyToPresent().Remove(m_OnBackBufferReadyToPresent);
+
+		UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer unbind back buffer copy callback!"));
 	}
 }
 
 void UOpenVinoStyleTransfer::OnBackBufferReady_RenderThread(SWindow& SlateWindow, const FTexture2DRHIRef& BackBuffer)
 {
 	UGameViewportClient* gameViewport = GetWorld()->GetGameViewport();
+	if (gameViewport == nullptr)
+		return;
+
 	FSceneViewport* vp = gameViewport->GetGameViewport();
 	SWindow* gameWin = gameViewport->GetWindow().Get();
+
+	if (vp == nullptr || gameWin == nullptr)
+		return;
 
 	if (gameWin->GetId() != SlateWindow.GetId())
 		return;
