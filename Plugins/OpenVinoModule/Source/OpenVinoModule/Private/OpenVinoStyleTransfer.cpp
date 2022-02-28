@@ -88,6 +88,9 @@ UOpenVinoStyleTransfer::Initialize(
 	last_out_width = width;
 	last_out_height = height;
 
+	tmp_buffer.Reset(0);
+	tmp_buffer.SetNum(0);
+
 	xml_file_path = xmlFilePath;
 	bin_file_path = binFilePath;
 
@@ -95,6 +98,7 @@ UOpenVinoStyleTransfer::Initialize(
 	if (!OnResizeOutput(width, height))
 	{
 		retLog = TEXT("OpenVino has failed to initialize: ");
+		UE_LOG(LogStyleTransfer, Error, TEXT("Style transfer has been initialized!"));
 		return false;
 	}
 
@@ -139,10 +143,10 @@ bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height)
 	if (width == 0 || height == 0)
 		return true;
 
-	UE_LOG(LogStyleTransfer, Log, TEXT("OpenVino initialize begin!"));
 	if (!OpenVino_Initialize(TCHAR_TO_ANSI(*xml_file_path), TCHAR_TO_ANSI(*xml_file_path), width, height))
 		return false;
-	UE_LOG(LogStyleTransfer, Log, TEXT("OpenVino initialize successful!"));
+
+	UE_LOG(LogStyleTransfer, Log, TEXT("OpenVino initialize successful, width = %d, height = %d!"), width, height);
 
 	// initialize buffer size
 	size_t size = width * height;
@@ -152,12 +156,16 @@ bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height)
 	rgba_buffer.Reset(size);
 	rgba_buffer.SetNum(size);
 
+	UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer buffer initialized!"));
+
 	// new window
 	dialog = SStyleTransferResultDialog::ShowWindow(width, height, window);
 	window->SetOnWindowClosed(FOnWindowClosed::CreateLambda([this](const TSharedRef<SWindow>& Window)
 		{
 			this->ClearWindow();
 		}));
+
+	UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer window created!"));
 
 	return true;
 }
@@ -167,6 +175,8 @@ void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, enum ELevelTick Tick
 	// reset input tmp process buffer
 	if (input_size.X != 0 && input_size.Y != 0 && input_size != last_input_size)
 	{
+		UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer resize input from %d*%d to %d*%d!"), last_input_size.X, last_input_size.Y, input_size.X, input_size.Y);
+
 		size_t buffer_size = input_size.X * input_size.Y * 3;
 		tmp_buffer.Reset(buffer_size);
 		tmp_buffer.SetNum(buffer_size);
@@ -176,13 +186,15 @@ void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, enum ELevelTick Tick
 	// output buffer change
 	if (transfer_width->GetInt() != last_out_width || transfer_height->GetInt() != last_out_height)
 	{
+		UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer resize output from %d*%d to %d*%d!"), last_out_width, last_out_height, transfer_width->GetInt(), transfer_height->GetInt());
+
 		last_out_width = transfer_width->GetInt();
 		last_out_height = transfer_height->GetInt();
 		OnResizeOutput(last_out_width, last_out_height);
 	}
 
 	// begin transfer from captured data to texture via cpu pass
-	if (StyleTransferToTexture(this, fb_data, input_size.X, input_size.Y))
+	if (tmp_buffer.Num() > 0 && StyleTransferToTexture(this, fb_data, input_size.X, input_size.Y))
 	{
 		// show texture in dialog
 		dialog->UpdateTexture(out_tex);
