@@ -84,10 +84,10 @@ private:
 
 	bool debug_flag;
 
-	TArray<FColor> fb_data;
-	TArray<BYTE> buffer;
-	TArray<BYTE> tmp_buffer;
-	TArray<FColor> rgba_buffer;
+	TArray<FColor> fb_data;  // captured Texture data
+	TArray<BYTE> tmp_buffer; // captured RGB data for the readiness of AI inference
+	TArray<BYTE> buffer;     // style transfered RGB data from AI inference
+	TArray<FColor> rgba_buffer; // style transfered Texture data 
 
 	UTexture2D* out_tex;
 
