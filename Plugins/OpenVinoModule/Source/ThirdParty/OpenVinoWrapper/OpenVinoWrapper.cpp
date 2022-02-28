@@ -99,7 +99,7 @@ OpenVino_Initialize(
 DLLEXPORT
 bool __cdecl
 OpenVino_Infer_FromTexture(
-	unsigned char* input, int inwidth, int inheight, int* outwidth, int* outheight, unsigned char* out, bool debug_flag)
+	unsigned char* input, int inwidth, int inheight,  unsigned char* out, bool debug_flag)
 {
 	try
 	{
@@ -110,7 +110,7 @@ OpenVino_Infer_FromTexture(
 			throw std::invalid_argument("File path passed was null");*/
 
 		// Actual Infer call passed to OpenVinoData
-		initializedData->Infer(input, inwidth, inheight, outwidth, outheight, out, debug_flag);
+		initializedData->Infer(input, inwidth, inheight, out, debug_flag);
 
 		return true;
 	}
