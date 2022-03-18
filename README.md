@@ -44,3 +44,9 @@ realtime style transfer in unreal engine
 | ------- | ---- | ----------------  |-------------- |
 | 512*512 | 82   | 29%               |20%            |
 | 224*224 | 148  | 25%               |23%            |
+
+## To-Do list
+  - [ ] GPU管线和openvino 推理 时间统计，加到屏幕统计信息 
+  - [ ] 用[openvino D3D api](https://docs.openvino.ai/2021.4/classInferenceEngine_1_1gpu_1_1D3DBufferBlob.html) 拿到DirectX的数据做推理
+  - [ ] 是否可以把UE渲染数据通过`ID3D11Device`的方式拿到
+  - [ ] 把style transfer的结果放到主窗口显示 
