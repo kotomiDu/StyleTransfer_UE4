@@ -78,13 +78,11 @@ extern "C"
 	* @param texture data 
 	* @param inwidth, texture width
 	* @param inheight, texture height
-	* @param outwidth, image width after style transfer
-	* @param outheight, image height after style transfer
 	* @param output, image data after style transfer
 	* @return true if call is successfull or false if not
 	*/
 	DLLEXPORT bool OpenVino_Infer_FromTexture(
-		unsigned char* input, int inwidth, int inheight, int* width, int* height, unsigned char* output, bool debug_flag);
+		unsigned char* input, int inwidth, int inheight,  unsigned char* output, bool debug_flag);
 
 	/*
 	* @brief This method is used to infer results, based on loaded model (see "OpenVino_Initialize")

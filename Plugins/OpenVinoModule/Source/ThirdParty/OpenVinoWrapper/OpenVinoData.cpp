@@ -191,7 +191,7 @@ OpenVinoData::Infer(
  */
 bool
 OpenVinoData::Infer(
-	unsigned char* inferdata, int inwidth, int inheight, int* outwidth, int* outheight, unsigned char* out, bool debug_flag)
+	unsigned char* inferdata, int inwidth, int inheight, unsigned char* out, bool debug_flag)
 {
 	// --------------------------- 5. Create infer request -------------------------------------------------
 	clog << "5. Creating request..." << endl;
@@ -273,8 +273,6 @@ OpenVinoData::Infer(
 	
 	int arraysize = outputImage.rows * outputImage.cols * outputImage.channels();
 	memcpy(out, outputImage.data, arraysize * sizeof(unsigned char));
-	*outwidth = outputImage.size().width;
-	*outheight = outputImage.size().height;
 
 	//cv::imwrite("test1.png", outputImage);
 	return true;

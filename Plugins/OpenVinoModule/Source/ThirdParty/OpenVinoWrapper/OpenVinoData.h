@@ -75,8 +75,6 @@ public:
 	 * @param input, image raw data
 	 * @param inwidth, width of image
 	 * @param inheight, height of image
-	 * @param outwidth, width of image after style transfer
-	 * @param outheight, height of image after style transfer
 	 * @param out, image raw data after style transfer
 	 */
 	bool
@@ -84,8 +82,6 @@ public:
 			unsigned char* input,
 			int inwidth,
 			int inheight,
-			int* outwidth,
-			int* outheight,
 			unsigned char* output,
 			bool debug_flag);
 

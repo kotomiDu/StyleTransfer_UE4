@@ -261,7 +261,7 @@ bool UOpenVinoStyleTransfer::StyleTransferToTexture(UObject* Outer, TArray<FColo
 	int width = transfer_width->GetInt();
 	int height = transfer_height->GetInt();
 
-	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [Outer, TextureData, inwidth, inheight, &resultlog, &Result, this]()
+	AsyncTask(ENamedThreads::AnyBackgroundThreadNormalTask, [Outer, TextureData, inwidth, inheight, width, height, &resultlog, &Result, this]()
 		{
 			
 			int index = 0;
@@ -272,11 +272,11 @@ bool UOpenVinoStyleTransfer::StyleTransferToTexture(UObject* Outer, TArray<FColo
 				tmp_buffer[index + 2] = color.R;
 				index = index + 3;
 			}
-			int outWidth, outHeight;
-			if( OpenVino_Infer_FromTexture(tmp_buffer.GetData(), inwidth, inheight, &outWidth, &outHeight, buffer.GetData(), debug_flag) )
+
+			if( OpenVino_Infer_FromTexture(tmp_buffer.GetData(), inwidth, inheight, buffer.GetData(), debug_flag) )
 			{
 				index = 0;
-				for(int i = 0; i < outWidth * outHeight; i++)
+				for(int i = 0; i < width * height; i++)
 				{
 					rgba_buffer[i].B = buffer[index];
 					rgba_buffer[i].G = buffer[index + 1];
@@ -285,7 +285,7 @@ bool UOpenVinoStyleTransfer::StyleTransferToTexture(UObject* Outer, TArray<FColo
 					index = index + 3;
 				}
 				Result.SetValue(rgba_buffer.GetData());
-				resultlog = FString::Format(TEXT("Success:Width({0}), Height({1})"), { FString::FromInt(outWidth), FString::FromInt(outHeight) });
+				resultlog = FString::Format(TEXT("Success:Width({0}), Height({1})"), { FString::FromInt(width), FString::FromInt(height) });
 			}
 			else
 			{
