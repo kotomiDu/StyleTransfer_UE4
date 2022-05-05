@@ -19,6 +19,7 @@ public class OpenVinoModule : ModuleRules
 		PrivateIncludePaths.AddRange(
 			new string[] {
 				// ... add other private include paths required here ...
+				EngineDirectory + "/Source/Runtime/Renderer/Private",
 			}
 			);
 			
@@ -46,6 +47,7 @@ public class OpenVinoModule : ModuleRules
 				"Engine",
 				"Slate",
 				"SlateCore",
+				"Renderer",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
