@@ -25,7 +25,7 @@ realtime style transfer in unreal engine
 | 512*512 | 9   | 42%              | 32%            |
 | 224*224 | 40   | 32%              | 42%            |
 
-|         | FPS  | 11900K CPU Usage | DG2            |
+|         | FPS  | 11900K CPU Usage | DG2 128EU      |
 | ------- | ---- | ---------------- | -------------- |
 | 512*512 | 17   | 55%              | 7%             |
 | 224*224 | 105  | 52%              | 27%            |
@@ -40,7 +40,7 @@ realtime style transfer in unreal engine
 
 ### DG2 GPU inference
 
-|         | FPS  | 11900K CPU Usage  |DG2            |
+|         | FPS  | 11900K CPU Usage  |DG2 128EU      |
 | ------- | ---- | ----------------  |-------------- |
 | 512*512 | 82   | 29%               |20%            |
 | 224*224 | 148  | 25%               |23%            |
