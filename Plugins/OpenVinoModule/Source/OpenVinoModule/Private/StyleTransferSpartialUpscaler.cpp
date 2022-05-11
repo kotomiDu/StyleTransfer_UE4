@@ -1,5 +1,7 @@
 #include "StyleTransferSpartialUpscaler.h"
 
+DECLARE_GPU_STAT(StyleTransferPass)
+
 StyleTransferSpatialUpscaler::StyleTransferSpatialUpscaler()
 {	
 }
@@ -16,6 +18,9 @@ ISpatialUpscaler* StyleTransferSpatialUpscaler::Fork_GameThread(const class FSce
 
 FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBuilder, const FViewInfo& View, const FInputs& PassInputs) const
 {
-	FScreenPassTexture FinalOutput;
+	RDG_GPU_STAT_SCOPE(GraphBuilder, StyleTransferPass);
+	check(PassInputs.SceneColor.IsValid());
+
+	FScreenPassTexture FinalOutput = PassInputs.SceneColor;
 	return MoveTemp(FinalOutput);
 }
