@@ -14,6 +14,12 @@ using namespace std;
 
 DEFINE_LOG_CATEGORY(LogStyleTransfer);
 
+static TAutoConsoleVariable<int32> CVarTransferEnabled(
+	TEXT("r.OVST.Enabled"),
+	0,
+	TEXT("Set Openvino Style transfer enabled. 0:Disable 1:CPU 2:GPU"),
+	ECVF_RenderThreadSafe);
+
 // open vino style transfer width
 static TAutoConsoleVariable<int32> CVarTransferWidth(
 	TEXT("r.OVST.Width"),
@@ -46,6 +52,7 @@ bool TestFileExists(FString filePath)
 UOpenVinoStyleTransfer::UOpenVinoStyleTransfer()
 	: transfer_width(nullptr)
 	, transfer_height(nullptr)
+	, transfer_mode(nullptr)
 	, debug_flag(false)
 	, dialog(nullptr)
 	, window(nullptr)
@@ -57,6 +64,7 @@ UOpenVinoStyleTransfer::UOpenVinoStyleTransfer()
 	// Set initialize width/height
 	transfer_width = IConsoleManager::Get().FindConsoleVariable(TEXT("r.OVST.Width"));
 	transfer_height = IConsoleManager::Get().FindConsoleVariable(TEXT("r.OVST.Height"));
+	transfer_mode = IConsoleManager::Get().FindConsoleVariable(TEXT("r.OVST.Enabled"));
 
 	input_size.X = input_size.Y = 0;
 	last_input_size.X = last_input_size.Y = 0;
@@ -83,24 +91,13 @@ UOpenVinoStyleTransfer::Initialize(
 		return false;
 	}
 
-	int width = transfer_width->GetInt();
-	int height = transfer_height->GetInt();
-	last_out_width = width;
-	last_out_height = height;
+	mode = 0;
 
 	tmp_buffer.Reset(0);
 	tmp_buffer.SetNum(0);
 
 	xml_file_path = xmlFilePath;
 	bin_file_path = binFilePath;
-
-	// init window with width/height
-	if (!OnResizeOutput(width, height))
-	{
-		retLog = TEXT("OpenVino has failed to initialize: ");
-		UE_LOG(LogStyleTransfer, Error, TEXT("Style transfer has been initialized!"));
-		return false;
-	}
 
 	retLog = TEXT("Style transfer has been initialized.");
 	UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer has been initialized!"));
@@ -172,6 +169,25 @@ bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height)
 
 void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	int newMode = transfer_mode->GetInt();
+	if (newMode != mode)
+	{
+		if (mode == 1)
+		{
+			OnResizeOutput(0, 0);
+		}
+		mode = newMode;
+		if (mode == 1)
+		{
+			last_out_width = transfer_width->GetInt();
+			last_out_height = transfer_height->GetInt();
+			OnResizeOutput(last_out_width, last_out_height);
+		}
+	}
+
+	if (mode != 1)	// only cpu mode use buffer copy
+		return;
+
 	// reset input tmp process buffer
 	if (input_size.X != 0 && input_size.Y != 0 && input_size != last_input_size)
 	{
@@ -225,6 +241,9 @@ void UOpenVinoStyleTransfer::UnBindBackbufferCallback()
 
 void UOpenVinoStyleTransfer::OnBackBufferReady_RenderThread(SWindow& SlateWindow, const FTexture2DRHIRef& BackBuffer)
 {
+	if (mode != 1)	// only cpu mode use buffer copy
+		return;
+
 	UGameViewportClient* gameViewport = GetWorld()->GetGameViewport();
 	if (gameViewport == nullptr)
 		return;

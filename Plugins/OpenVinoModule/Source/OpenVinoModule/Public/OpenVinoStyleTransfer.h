@@ -71,6 +71,10 @@ private:
 	/** Holds the future value which represents the asynchronous loading operation. */
 	TFuture<FColor*> Future;
 
+	// mode
+	IConsoleVariable* transfer_mode;
+	int32 mode;
+
 	// output
 	IConsoleVariable* transfer_width;
 	IConsoleVariable* transfer_height;
