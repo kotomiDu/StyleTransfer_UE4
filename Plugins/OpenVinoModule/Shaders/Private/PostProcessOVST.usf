@@ -31,5 +31,5 @@ void MainCS(uint3 LocalThreadId : SV_GroupThreadID, uint3 WorkGroupId : SV_Group
 void MainPS(noperspective float4 UVAndScreenPos : TEXCOORD0, float4 SvPosition : SV_POSITION, out float4 OutColor : SV_Target0)
 {
 	uint2 st = uint2(SvPosition.xy);
-	OutColor = InputTexture[st];
+	OutColor.rgb = (InputTexture[st].r + InputTexture[st].g + InputTexture[st].a) / 3.0f;
 }

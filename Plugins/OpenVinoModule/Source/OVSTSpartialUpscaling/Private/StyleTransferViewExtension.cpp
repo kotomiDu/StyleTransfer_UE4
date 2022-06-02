@@ -1,7 +1,7 @@
-#include "StyleTransferSpartialUpscaler.h"
-
 #define OVSTSPATIALUPSCALING_API DLLEXPORT
 #include "StyleTransferViewExtension.h"
+
+#include "StyleTransferSpartialUpscaler.h"
 
 static TAutoConsoleVariable<int32> CVarTransferEnabled(
 	TEXT("r.OVST.Enabled"),
