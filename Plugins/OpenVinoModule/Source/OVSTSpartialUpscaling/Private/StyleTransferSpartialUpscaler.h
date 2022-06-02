@@ -2,6 +2,11 @@
 
 #include "PostProcess/PostProcessUpscale.h"
 
+struct FStyleTransferSpatialUpscalerData
+{	
+	void* device;
+};
+
 class StyleTransferSpatialUpscaler final : public ISpatialUpscaler
 {
 public:

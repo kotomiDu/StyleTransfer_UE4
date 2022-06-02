@@ -1,0 +1,35 @@
+//------------------------------------------------------------------------------
+// Style transform for UE4 Plugin
+//------------------------------------------------------------------------------
+
+#include "/Engine/Private/Common.ush"
+#include "/Engine/Private/ScreenPass.ush"
+
+
+// =====================================================================================
+//
+// SHADER RESOURCES
+//
+// =====================================================================================
+Texture2D<float4>   InputTexture;
+RWTexture2D<float4> OutputTexture;
+
+// =====================================================================================
+//
+// ENTRY POINTS
+//
+// =====================================================================================
+#if COMPUTE_SHADER
+[numthreads(THREADGROUP_SIZEX, THREADGROUP_SIZEY, THREADGROUP_SIZEZ)]
+void MainCS(uint3 LocalThreadId : SV_GroupThreadID, uint3 WorkGroupId : SV_GroupID, uint3 Dtid : SV_DispatchThreadID)
+{
+	uint2 st = Dtid.xy;
+	OutputTexture[st] = InputTexture[st];
+}
+#endif // COMPUTE_SHADER
+
+void MainPS(noperspective float4 UVAndScreenPos : TEXCOORD0, float4 SvPosition : SV_POSITION, out float4 OutColor : SV_Target0)
+{
+	uint2 st = uint2(SvPosition.xy);
+	OutColor = InputTexture[st];
+}

@@ -14,12 +14,6 @@ using namespace std;
 
 DEFINE_LOG_CATEGORY(LogStyleTransfer);
 
-static TAutoConsoleVariable<int32> CVarTransferEnabled(
-	TEXT("r.OVST.Enabled"),
-	0,
-	TEXT("Set Openvino Style transfer enabled. 0:Disable 1:CPU 2:GPU"),
-	ECVF_RenderThreadSafe);
-
 // open vino style transfer width
 static TAutoConsoleVariable<int32> CVarTransferWidth(
 	TEXT("r.OVST.Width"),
@@ -47,12 +41,12 @@ bool TestFileExists(FString filePath)
 	return false;
 }
 
-
+static UOpenVinoStyleTransfer* openVinoTransfer = nullptr;
 // Sets default values for this component's properties
 UOpenVinoStyleTransfer::UOpenVinoStyleTransfer()
-	: transfer_width(nullptr)
+	: transfer_mode(nullptr)
+	, transfer_width(nullptr)
 	, transfer_height(nullptr)
-	, transfer_mode(nullptr)
 	, debug_flag(false)
 	, dialog(nullptr)
 	, window(nullptr)
@@ -68,6 +62,11 @@ UOpenVinoStyleTransfer::UOpenVinoStyleTransfer()
 
 	input_size.X = input_size.Y = 0;
 	last_input_size.X = last_input_size.Y = 0;
+}
+
+UOpenVinoStyleTransfer* UOpenVinoStyleTransfer::GetInstance()
+{
+	return openVinoTransfer;
 }
 
 /**
@@ -105,11 +104,15 @@ UOpenVinoStyleTransfer::Initialize(
 	// bind callback
 	BindBackbufferCallback();
 
+	openVinoTransfer = this;
+
 	return true;
 }
 
 void UOpenVinoStyleTransfer::Release()
 {
+	openVinoTransfer = nullptr;
+
 	// unbind buffer
 	UnBindBackbufferCallback();
 

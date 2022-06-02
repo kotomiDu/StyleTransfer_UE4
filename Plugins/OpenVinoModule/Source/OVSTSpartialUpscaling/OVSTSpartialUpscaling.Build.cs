@@ -3,9 +3,9 @@ using System;
 using System.IO;
 using UnrealBuildTool;
 
-public class OpenVinoModule : ModuleRules
+public class OVSTSpartialUpscaling : ModuleRules
 {
-	public OpenVinoModule(ReadOnlyTargetRules Target) : base(Target)
+	public OVSTSpartialUpscaling(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 		
@@ -13,7 +13,7 @@ public class OpenVinoModule : ModuleRules
 			new string[] {
 				// ... add public include paths required here ...
 			}
-			);
+		);
 				
 		
 		PrivateIncludePaths.AddRange(
@@ -21,7 +21,7 @@ public class OpenVinoModule : ModuleRules
 				// ... add other private include paths required here ...
 				EngineDirectory + "/Source/Runtime/Renderer/Private",
 			}
-			);
+		);
 			
 		
 		PublicDependencyModuleNames.AddRange(
@@ -37,7 +37,7 @@ public class OpenVinoModule : ModuleRules
 				"EditorStyle"
 				// ... add other public dependencies that you statically link with here ...
 			}
-			);
+		);
 			
 		
 		PrivateDependencyModuleNames.AddRange(
@@ -49,10 +49,9 @@ public class OpenVinoModule : ModuleRules
 				"SlateCore",
 				"Renderer",
 
-				"OVSTSpartialUpscaling",
 				// ... add private dependencies that you statically link with here ...	
 			}
-			);
+		);
 		
 		
 		DynamicallyLoadedModuleNames.AddRange(
@@ -60,17 +59,6 @@ public class OpenVinoModule : ModuleRules
 			{
 				// ... add any modules that your module loads dynamically here ...
 			}
-			);
-
-		if (Target.Platform == UnrealTargetPlatform.Win64)
-		{
-			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "../ThirdParty/OpenVinoWrapper/bin", "OpenVinoWrapper.lib"));
-			RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "../ThirdParty/OpenVinoWrapper/bin", "OpenVinoWrapper.dll"));
-		}
-		else
-		{
-			// Platform not supported:
-			throw new PlatformNotSupportedException("This platform is not supported for this project: " + Target.Platform.ToString());
-		}
+		);
 	}
 }

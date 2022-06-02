@@ -1,9 +1,12 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "OpenVinoModule.h"
+#include "Engine/Engine.h"
+
+#define OVSTSPATIALUPSCALING_API DLLIMPORT
 #include "StyleTransferViewExtension.h"
 
-#include "Engine/Engine.h"
+IMPLEMENT_MODULE(FOpenVinoModuleModule, OpenVinoModule)
 
 #define LOCTEXT_NAMESPACE "FOpenVinoModuleModule"
 
@@ -21,5 +24,3 @@ void FOpenVinoModuleModule::ShutdownModule()
 }
 
 #undef LOCTEXT_NAMESPACE
-	
-IMPLEMENT_MODULE(FOpenVinoModuleModule, OpenVinoModule)

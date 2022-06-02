@@ -20,6 +20,8 @@ public:
 	// Sets default values for this component's properties
 	UOpenVinoStyleTransfer();
 
+	static UOpenVinoStyleTransfer* GetInstance();
+
 	/**
 	 * @brief Initializes OpenVino
 	 * @param xmlFilePath
@@ -44,6 +46,8 @@ public:
 		FStyleTransferComplete OnStyleTransferComplete;
 
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
+
+	inline int32 GetMode() { return mode; }
 private:
 
 	/** Helper function to dynamically create a new texture from raw pixel data. */

@@ -12,6 +12,6 @@ public:
 	void SetupView(FSceneViewFamily& InViewFamily, FSceneView& InView) override {}
 	void PreRenderViewFamily_RenderThread(FRHICommandListImmediate& RHICmdList, FSceneViewFamily& InViewFamily) override {}
 
-	void BeginRenderViewFamily(FSceneViewFamily& InViewFamily) override;
-	void PreRenderView_RenderThread(FRHICommandListImmediate& RHICmdList, FSceneView& InView) override;
+	OVSTSPATIALUPSCALING_API void BeginRenderViewFamily(FSceneViewFamily& InViewFamily) override;
+	OVSTSPATIALUPSCALING_API void PreRenderView_RenderThread(FRHICommandListImmediate& RHICmdList, FSceneView& InView) override;
 };

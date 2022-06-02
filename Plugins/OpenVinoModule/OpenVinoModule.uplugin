@@ -19,6 +19,11 @@
 			"Name": "OpenVinoModule",
 			"Type": "Runtime",
 			"LoadingPhase": "PostEngineInit"
+		},
+		{
+			"Name": "OVSTSpartialUpscaling",
+			"Type": "Runtime",
+			"LoadingPhase": "PostConfigInit"
 		}
 	]
 }
