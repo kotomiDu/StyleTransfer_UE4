@@ -126,8 +126,8 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 		GraphBuilder.AddPass(
 			RDG_EVENT_NAME("OpenVinoStyleTransfer"),
 			PassParameters,
-			ERDGPassFlags::Compute,
-			[PassParameters](FRHIComputeCommandList& RHICmdList)
+			ERDGPassFlags::Compute | ERDGPassFlags::NeverCull,
+			[PassParameters](FRHICommandList& RHICmdList)
 			{
 				// process opencl here
 				ID3D11Texture2D* inputTex = static_cast<ID3D11Texture2D*>(PassParameters->OVST.InputTexture->GetRHI()->GetTexture2D()->GetNativeResource());
@@ -135,7 +135,7 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 				int width = PassParameters->OVST.Width;
 				int height = PassParameters->OVST.Height;
 				// call open vino pass here ...
-
+				
 			});
 	}
 #endif
