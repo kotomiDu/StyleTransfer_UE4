@@ -1,3 +1,13 @@
+#include "RHIStaticStates.h"
+#include "RHIDefinitions.h"
+#include "RHI.h"
+#include "RenderResource.h"
+#include "Engine/TextureRenderTarget2D.h"
+
+#include "Windows/AllowWindowsPlatformTypes.h"
+#include <d3d11.h>
+#include "Windows/HideWindowsPlatformTypes.h"
+
 #include "StyleTransferSpartialUpscaler.h"
 
 DECLARE_GPU_STAT(StyleTransferPass)
@@ -7,6 +17,13 @@ class OVST_UseReserve : SHADER_PERMUTATION_BOOL("ENABLE_RESERVE");
 
 BEGIN_SHADER_PARAMETER_STRUCT(FOVSTPassParameters, )
 	SHADER_PARAMETER_RDG_TEXTURE(Texture2D, InputTexture)
+	SHADER_PARAMETER(int, Width)
+	SHADER_PARAMETER(int, Height)
+END_SHADER_PARAMETER_STRUCT()
+
+BEGIN_SHADER_PARAMETER_STRUCT(FParametersOCL, )
+	SHADER_PARAMETER_STRUCT_INCLUDE(FOVSTPassParameters, OVST)
+	SHADER_PARAMETER_RDG_TEXTURE(Texture2D, OutputTexture)
 END_SHADER_PARAMETER_STRUCT()
 
 ///
@@ -23,7 +40,7 @@ public:
 	BEGIN_SHADER_PARAMETER_STRUCT(FParameters, )
 		SHADER_PARAMETER_STRUCT_INCLUDE(FOVSTPassParameters, OVST)
 		SHADER_PARAMETER_RDG_TEXTURE_UAV(RWTexture2D, OutputTexture)
-		END_SHADER_PARAMETER_STRUCT()
+	END_SHADER_PARAMETER_STRUCT()
 
 	static bool ShouldCompilePermutation(const FGlobalShaderPermutationParameters& Parameters)
 	{
@@ -43,7 +60,7 @@ public:
 IMPLEMENT_GLOBAL_SHADER(FOVSTCS, "/Plugin/OpenVinoModule/Private/PostProcessOVST.usf", "MainCS", SF_Compute);
 
 ///
-/// RCAS PIXEL SHADER
+/// OVST PIXEL SHADER
 ///
 class FOVSTPS : public FGlobalShader
 {
@@ -90,10 +107,39 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 	RDG_GPU_STAT_SCOPE(GraphBuilder, StyleTransferPass);
 	check(PassInputs.SceneColor.IsValid());
 
+	FString RHIName = GDynamicRHI->GetName();
 	FScreenPassRenderTarget Output = PassInputs.OverrideOutput;
 	check(Output.IsValid());
 
 	// add pass here
+#if 1	// openvino pass
+	FScreenPassTextureViewport OutputViewport = FScreenPassTextureViewport(Output.Texture);
+	FParametersOCL* PassParameters = GraphBuilder.AllocParameters<FParametersOCL>();
+	PassParameters->OVST.InputTexture = PassInputs.SceneColor.Texture;
+	PassParameters->OVST.Width = OutputViewport.Rect.Width();
+	PassParameters->OVST.Height = OutputViewport.Rect.Height();
+	PassParameters->OutputTexture = Output.Texture;
+
+#if PLATFORM_WINDOWS
+	if (RHIName == TEXT("D3D11"))
+	{
+		GraphBuilder.AddPass(
+			RDG_EVENT_NAME("OpenVinoStyleTransfer"),
+			PassParameters,
+			ERDGPassFlags::Compute,
+			[PassParameters](FRHIComputeCommandList& RHICmdList)
+			{
+				// process opencl here
+				ID3D11Texture2D* inputTex = static_cast<ID3D11Texture2D*>(PassParameters->OVST.InputTexture->GetRHI()->GetTexture2D()->GetNativeResource());
+				ID3D11Texture2D* outputTex = static_cast<ID3D11Texture2D*>(PassParameters->OutputTexture->GetRHI()->GetTexture2D()->GetNativeResource());
+				int width = PassParameters->OVST.Width;
+				int height = PassParameters->OVST.Height;
+				// call open vino pass here ...
+
+			});
+	}
+#endif
+#else	// test PS/CS pass
 	const bool bOutputSupportsUAV = (Output.Texture->Desc.Flags & TexCreate_UAV) == TexCreate_UAV;
 	if (!bOutputSupportsUAV)
 	{	// vs-ps
@@ -142,7 +188,8 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 			FComputeShaderUtils::GetGroupCount(OutputViewport.Rect.Size(), 16)
 		);
 	}
-
+#endif
+	
 	FScreenPassTexture FinalOutput = Output;
 	return MoveTemp(FinalOutput);
 }
