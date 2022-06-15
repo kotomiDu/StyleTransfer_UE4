@@ -1,3 +1,4 @@
+#include "StyleTransferSpartialUpscaler.h"
 #include "RHIStaticStates.h"
 #include "RHIDefinitions.h"
 #include "RHI.h"
@@ -8,7 +9,7 @@
 #include <d3d11.h>
 #include "Windows/HideWindowsPlatformTypes.h"
 
-#include "StyleTransferSpartialUpscaler.h"
+
 
 DECLARE_GPU_STAT(StyleTransferPass)
 
