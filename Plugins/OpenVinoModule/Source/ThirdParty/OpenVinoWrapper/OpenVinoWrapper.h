@@ -34,8 +34,7 @@ embedded in Materials by Intel or Intel's suppliers or licensors in any way."
 #define DLLEXPORT
 #endif
 
-#include <ie/inference_engine.hpp>
-
+#include <d3d11.h>
 #endif
 
 extern "C"
@@ -104,4 +103,29 @@ extern "C"
 	DLLEXPORT bool OpenVino_GetLastError(
 		char* lastErrorMessage,
 		size_t maxLength);
+
+	/*
+	* @brief This method is called to make initialization of the OpenVino library and load the
+	* models based on files specified in "modelXmlFilePath", "modelBinFilePath" and "d3dDevice".
+	* @param modelXmlFilePath Path to, for example: style_transfer.xml
+	* @param modelBinFilePath Path to, for example: style_transfer.bin
+	* @param d3dDevice 
+	* @param inferWidth, inference width
+	* @param inferHeight, inference height
+	* @return true if call is successfull or false if not
+	*/
+	DLLEXPORT bool OpenVino_Initialize_BaseOCL(
+		LPCSTR modelXmlFilePath,
+		LPCSTR modelBinFilePath,
+		ID3D11Device* d3dDevice,
+		int inferWidth,
+		int inferHeight);
+
+
+	DLLEXPORT bool OpenVino_Infer_FromDXData(
+		ID3D11Texture2D* input_surface,
+		ID3D11Texture2D* output_surface,
+		int surfaceWidth,
+		int surfaceHeight,
+		bool debug_flag);
 }

@@ -32,9 +32,15 @@ embedded in Materials by Intel or Intel's suppliers or licensors in any way."
 #include <cstdlib>
 #include <string>
 #include <limits>
+#include <d3d11.h>
 
 #include <opencv2/opencv.hpp>
 #include <ie/inference_engine.hpp>
+#include "openvino/openvino.hpp"
+#include "openvino/runtime/intel_gpu/properties.hpp"
+#include "openvino/runtime/intel_gpu/ocl/ocl.hpp"
+
+#include "OpenCLUtil.h"
 
 using namespace std;
 using namespace InferenceEngine;
@@ -276,4 +282,125 @@ OpenVinoData::Infer(
 
 	//cv::imwrite("test1.png", outputImage);
 	return true;
+}
+
+bool OpenVinoData::Create_OCLCtx(ID3D11Device* d3dDevice)
+{
+	if (ocl.Init()) {
+		return -1;
+	}
+	oclEnv = ocl.GetEnv(d3dDevice).get();
+	if (!oclEnv) {
+		std::cerr << "Failed to get OCL environment for the session" << std::endl;
+		return -1;
+	}
+
+	oclStore = CreateFilterStore(oclEnv, "reorder_data_test.cl");
+	srcConversionKernel = dynamic_cast<SourceConversion*>(oclStore->CreateKernel("srcConversion"));
+	return 1;
+}
+
+/**
+	 * @brief Initialize OpenVino with passed model files and opencl context
+	 * @param modelXmlFilePath
+	 * @param ctx
+	 * @param inferWidth
+	 * @param inferHeight
+	 */
+void OpenVinoData::Initialize_BaseOCL(
+	std::string modelXmlFilePath,
+	int inferWidth,
+	int inferHeight)
+{
+	//1) Reading network 
+	ov::Core core;
+	core.set_property(ov::cache_dir("cache"));
+	auto model = core.read_model(modelXmlFilePath);
+
+	ov::preprocess::PrePostProcessor ppp(model);
+	// 2)Setting input info
+	ppp.input().tensor().
+		set_layout("NCHW").
+		set_element_type(ov::element::u8).
+		set_color_format(ov::preprocess::ColorFormat::RGB).
+		//set_shape({ 1,3,480,640}).
+		set_memory_type(ov::intel_gpu::memory_type::buffer);
+
+	// 3)Adding explicit preprocessing steps:
+	ppp.input().preprocess()
+		//.convert_color(ov::preprocess::ColorFormat::RGB)
+		//.convert_layout("NCHW")
+		//.resize(ov::preprocess::ResizeAlgorithm::RESIZE_LINEAR)
+		.convert_element_type(ov::element::f32)
+		.mean(127.5)
+		.scale(127.5);
+
+	ppp.input().model().set_layout("NCHW");
+
+	// 4)Setting output info
+	ppp.output().tensor()
+		.set_element_type(ov::element::u8);
+
+	model = ppp.build();
+
+	// 5) reshape mode input
+	input_shape = { 1,3,static_cast<size_t>(inferHeight), static_cast<size_t>(inferWidth) };
+	model->reshape(input_shape);
+
+	// 6)Loading model to the device -------------------------------------------
+	auto remote_context = ov::intel_gpu::ocl::ClContext(core, oclEnv->GetContext());
+	_oclCtx = oclEnv->GetContext();
+	compiled_model = core.compile_model(model, remote_context); 
+
+	// 7)Creating infer request ------------------------------------------------
+	infer_request = compiled_model.create_infer_request();
+
+	// 8)Create input and output GPU Blobs
+	_inputBuffer = cl::Buffer(_oclCtx, CL_MEM_READ_WRITE, input_shape[1] * input_shape[2] * input_shape[3] * sizeof(uint8_t), NULL, NULL);
+	_outputBuffer = cl::Buffer(_oclCtx, CL_MEM_READ_WRITE, input_shape[1] * input_shape[2] * input_shape[3] * sizeof(uint8_t), NULL, NULL);
+	auto shared_in_blob = remote_context.create_tensor(ov::element::u8, input_shape, _inputBuffer);
+	auto shared_output_blob = remote_context.create_tensor(ov::element::u8, input_shape, _outputBuffer);  //style transfer output has the same shape with input
+	infer_request.set_input_tensor(shared_in_blob);
+	infer_request.set_output_tensor(shared_output_blob);
+}
+
+
+/**
+ * @brief Call infer using DirectX Texture2D RGBA
+ * @param input_surface, input Texture2D RGBA data
+ * @param output_surface, output Texture2D RGBA data
+ * @param surfaceWidth, width of Texture2D
+ * @param surfaceHeight, height of Texture2D
+ * @param debug_flag, debug mode
+ */
+
+bool OpenVinoData::Infer(
+	ID3D11Texture2D* input_surface, 
+	ID3D11Texture2D* output_surface, 
+	int surfaceWidth,
+	int surfaceHeight,
+	bool debug_flag)
+{
+	if (input_shape[2] != surfaceHeight ||
+		input_shape[3] != surfaceWidth)
+	{
+		clog << "The surface size is not consistent with model input size" << endl;
+	}
+
+
+	if (!srcConversionKernel->SetArgumentsRGBtoRGBbuffer(input_surface, _inputBuffer.get(), surfaceWidth, surfaceHeight)) {
+		return false;
+	}
+	if (!srcConversionKernel->Run()) {
+		return false;
+	}
+
+	infer_request.infer();
+
+	if (!srcConversionKernel->SetArgumentsRGBbuffertoRGBA(_outputBuffer.get(), output_surface, surfaceWidth, surfaceHeight)) {
+		return false;
+	}
+	if (!srcConversionKernel->Run()) {
+		return false;
+	}
 }

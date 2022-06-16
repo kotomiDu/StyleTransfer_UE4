@@ -7,7 +7,10 @@ set (CMAKE_VERBOSE_MAKEFILE ON)
 set (TARGET_NAME "OpenVinoWrapper")
 
 include_directories(${PROJECT_BINARY_DIR}/../openvino/include)
+include_directories(${PROJECT_BINARY_DIR}/../openvino/include/ie)
 include_directories(${PROJECT_BINARY_DIR}/../opencv/include)
+include_directories(${PROJECT_BINARY_DIR}/../ocl/cl_headers)
+include_directories(${PROJECT_BINARY_DIR}/../ocl/clhpp_headers/include)
 
 link_directories(${LIB_FOLDER})
 LINK_DIRECTORIES(${PROJECT_BINARY_DIR}/../opencv/lib)
@@ -15,7 +18,7 @@ LINK_DIRECTORIES(${PROJECT_BINARY_DIR}/../openvino/lib/intel64/lib_release)
 
 
 # Add source to this project's executable.
-add_library(${TARGET_NAME} SHARED "OpenVinoWrapper.cpp" "OpenVinoWrapper.h" "OpenVinoData.cpp" "OpenVinoData.h")
+add_library(${TARGET_NAME} SHARED "OpenVinoWrapper.cpp" "OpenVinoWrapper.h" "OpenVinoData.cpp" "OpenVinoData.h"  "OpenCLUtil.cpp" "OpenCLUtil.h")
 
 if(WIN32)
 	set_target_properties(${TARGET_NAME} PROPERTIES COMPILE_FLAGS "/D_UNONICODE /DUNONICODE /DOPEN_VINO_LIBRARY")
