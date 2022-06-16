@@ -22,7 +22,7 @@ embedded in Materials by Intel or Intel's suppliers or licensors in any way."
 #pragma once
 
 #include <string>
-#include <inference_engine.hpp>
+#include <ie/inference_engine.hpp>
 
 /**
  * @class OpenVinoData

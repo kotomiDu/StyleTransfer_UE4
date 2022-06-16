@@ -34,7 +34,7 @@ embedded in Materials by Intel or Intel's suppliers or licensors in any way."
 #include <limits>
 
 #include <opencv2/opencv.hpp>
-#include <inference_engine.hpp>
+#include <ie/inference_engine.hpp>
 
 using namespace std;
 using namespace InferenceEngine;

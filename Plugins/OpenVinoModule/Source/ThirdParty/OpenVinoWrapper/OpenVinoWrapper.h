@@ -34,7 +34,7 @@ embedded in Materials by Intel or Intel's suppliers or licensors in any way."
 #define DLLEXPORT
 #endif
 
-#include <inference_engine.hpp>
+#include <ie/inference_engine.hpp>
 
 #endif
 

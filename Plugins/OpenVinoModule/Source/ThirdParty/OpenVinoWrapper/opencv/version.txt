@@ -1,0 +1,15 @@
+4.5.4-349-g18ca998f6 (OpenVINO/build_master)
+349
+master
+18ca998f67bbf9e950a847a621928012f8b0ca1e
+
+General configuration for OpenCV 4.5.4-dev =====================================
+  Version control:               18ca998f67bbf9e950a847a621928012f8b0ca1e
+
+  Platform:
+    Timestamp:                   2021-11-15T15:14:33Z
+    Host:                        Windows 10.0.19043 AMD64
+    CMake:                       3.14.5
+    CMake generator:             Visual Studio 16 2019
+    CMake build tool:            C:/Program Files (x86)/Microsoft Visual Studio/2019/BuildTools/MSBuild/Current/Bin/MSBuild.exe
+    MSVC:                        1926
