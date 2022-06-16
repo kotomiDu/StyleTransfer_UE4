@@ -19,9 +19,18 @@ void StyleTransferViewExtension::BeginRenderViewFamily(FSceneViewFamily& InViewF
 
 void StyleTransferViewExtension::PreRenderView_RenderThread(FRHICommandListImmediate& RHICmdList, FSceneView& InView)
 {
-	// Get device here
-	void* device = RHICmdList.GetNativeDevice();
+	if (CVarTransferEnabled.GetValueOnAnyThread() == 2)
+	{
+		// Get device here
+		void* device = RHICmdList.GetNativeDevice();
+		FString RHIName = GDynamicRHI->GetName();
+#if PLATFORM_WINDOWS
+		// Set ocl device
+		if (RHIName == TEXT("D3D11"))
+		{
+			// Set device here for ocl
 
-
-	
+		}
+#endif
+	}
 }
