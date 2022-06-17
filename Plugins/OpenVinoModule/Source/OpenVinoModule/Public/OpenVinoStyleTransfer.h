@@ -64,7 +64,7 @@ private:
 	void UnBindBackbufferCallback();
 
 	// on resize output width/height
-	bool OnResizeOutput(int width, int height);
+	bool OnResizeOutput(int width, int height, int inmode);
 
 	/**
 	 * @brief Returns last error from OpenVino, logging it first to UE's log system

@@ -117,7 +117,7 @@ void UOpenVinoStyleTransfer::Release()
 	UnBindBackbufferCallback();
 
 	// release
-	OnResizeOutput(0, 0);
+	OnResizeOutput(0, 0, transfer_mode->GetInt());
 }
 
 UTexture2D* UOpenVinoStyleTransfer::GetTransferedTexture()
@@ -125,8 +125,11 @@ UTexture2D* UOpenVinoStyleTransfer::GetTransferedTexture()
 	return out_tex;
 }
 
-bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height)
+bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height, int inmode)
 {
+	if (inmode == 0)
+		return true;
+
 	if (window != nullptr)
 	{
 		window->DestroyWindowImmediately();
@@ -143,10 +146,35 @@ bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height)
 	if (width == 0 || height == 0)
 		return true;
 
-	if (!OpenVino_Initialize(TCHAR_TO_ANSI(*xml_file_path), TCHAR_TO_ANSI(*xml_file_path), width, height))
+	if (inmode == 1)
+	{
+		if (!OpenVino_Initialize(TCHAR_TO_ANSI(*xml_file_path), TCHAR_TO_ANSI(*xml_file_path), width, height))
+			return false;
+	}
+	else if (inmode == 2)
+	{
+		FString RHIName = GDynamicRHI->GetName();
+#if PLATFORM_WINDOWS
+		// Set ocl device
+		if (RHIName == TEXT("D3D11"))
+		{
+			// Set device here for OpenVino_InitializeOcl
+			void* device = GDynamicRHI->RHIGetNativeDevice();
+
+		}
+		else
+		{
+			return false;
+		}
+#else
 		return false;
+#endif
+	}
 
 	UE_LOG(LogStyleTransfer, Log, TEXT("OpenVino initialize successful, width = %d, height = %d!"), width, height);
+
+	if (inmode == 2)
+		return true;
 
 	// initialize buffer size
 	size_t size = width * height;
@@ -175,17 +203,14 @@ void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, enum ELevelTick Tick
 	int newMode = transfer_mode->GetInt();
 	if (newMode != mode)
 	{
-		if (mode == 1)
-		{
-			OnResizeOutput(0, 0);
-		}
+		OnResizeOutput(0, 0, mode);
 		mode = newMode;
 		if (mode == 1)
 		{
 			last_out_width = transfer_width->GetInt();
 			last_out_height = transfer_height->GetInt();
-			OnResizeOutput(last_out_width, last_out_height);
 		}
+		OnResizeOutput(last_out_width, last_out_height, mode);
 	}
 
 	if (mode != 1)	// only cpu mode use buffer copy
@@ -209,7 +234,7 @@ void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, enum ELevelTick Tick
 
 		last_out_width = transfer_width->GetInt();
 		last_out_height = transfer_height->GetInt();
-		OnResizeOutput(last_out_width, last_out_height);
+		OnResizeOutput(last_out_width, last_out_height, mode);
 	}
 
 	// begin transfer from captured data to texture via cpu pass
