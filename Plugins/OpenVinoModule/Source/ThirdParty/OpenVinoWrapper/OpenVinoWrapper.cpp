@@ -195,7 +195,7 @@ bool __cdecl
 OpenVino_Initialize_BaseOCL(
 	LPCSTR modelXmlFilePath,
 	LPCSTR modelBinFilePath,
-	ID3D11Device* d3dDevice,
+	void* d3dDevice,
 	int inferWidth,
 	int inferHeight)
 {
@@ -206,13 +206,13 @@ OpenVino_Initialize_BaseOCL(
 			throw invalid_argument("One of the file paths passed was null");
 
 		last_error.clear();
-
+		ID3D11Device* dxDevice = (ID3D11Device*)d3dDevice;
 		
 
 		// OpenVinoData structure does actual processing:
 		auto ptr = std::make_unique<OpenVinoData>();
 		//Create opencl context
-		ptr->Create_OCLCtx(d3dDevice);
+		ptr->Create_OCLCtx(dxDevice);
 		
 		// Forward initialization to OpenVinoData:
 		ptr->Initialize_BaseOCL(modelXmlFilePath,inferWidth, inferHeight);
@@ -239,8 +239,8 @@ OpenVino_Initialize_BaseOCL(
 DLLEXPORT
 bool __cdecl
 OpenVino_Infer_FromDXData(
-	ID3D11Texture2D* input_surface,
-	ID3D11Texture2D* output_surface,
+	void* input_surface,
+	void* output_surface,
 	int surfaceWidth,
 	int surfaceHeight, 
 	bool debug_flag)
@@ -250,9 +250,10 @@ OpenVino_Infer_FromDXData(
 		if (!initializedData)
 			throw std::invalid_argument("OpenVINO has not been initialized");
 
-	
+		ID3D11Texture2D* input_dxdata = (ID3D11Texture2D*)input_surface;
+		ID3D11Texture2D* output_dxdata = (ID3D11Texture2D*)output_surface;
 		// Actual Infer call passed to OpenVinoData
-		initializedData->Infer(input_surface, output_surface, surfaceWidth,surfaceHeight,debug_flag);
+		initializedData->Infer(input_dxdata, output_dxdata, surfaceWidth,surfaceHeight,debug_flag);
 
 		return true;
 	}

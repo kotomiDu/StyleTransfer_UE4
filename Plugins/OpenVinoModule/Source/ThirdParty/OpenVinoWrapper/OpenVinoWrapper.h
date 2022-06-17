@@ -115,16 +115,16 @@ extern "C"
 	* @return true if call is successfull or false if not
 	*/
 	DLLEXPORT bool OpenVino_Initialize_BaseOCL(
-		LPCSTR modelXmlFilePath,
-		LPCSTR modelBinFilePath,
-		ID3D11Device* d3dDevice,
+		const char* modelXmlFilePath,
+		const char* modelBinFilePath,
+		void* d3dDevice,
 		int inferWidth,
 		int inferHeight);
 
 
 	DLLEXPORT bool OpenVino_Infer_FromDXData(
-		ID3D11Texture2D* input_surface,
-		ID3D11Texture2D* output_surface,
+		void* input_surface,
+		void* output_surface,
 		int surfaceWidth,
 		int surfaceHeight,
 		bool debug_flag);

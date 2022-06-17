@@ -160,7 +160,8 @@ bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height, int inmode)
 		{
 			// Set device here for OpenVino_InitializeOcl
 			void* device = GDynamicRHI->RHIGetNativeDevice();
-
+			if (!OpenVino_Initialize_BaseOCL(TCHAR_TO_ANSI(*xml_file_path), TCHAR_TO_ANSI(*xml_file_path), device,width, height))
+				return false;
 		}
 		else
 		{
