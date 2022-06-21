@@ -351,7 +351,7 @@ void OpenVinoData::Initialize_BaseOCL(
 	auto remote_context = ov::intel_gpu::ocl::ClContext(core, oclEnv->GetContext());
 	_oclCtx = oclEnv->GetContext();
 	compiled_model = core.compile_model(model, remote_context); 
-
+	//ov::serialize(compiled_model.get_runtime_model(), "test_graph.xml");
 	// 7)Creating infer request ------------------------------------------------
 	infer_request = compiled_model.create_infer_request();
 
@@ -403,4 +403,31 @@ bool OpenVinoData::Infer(
 	if (!srcConversionKernel->Run()) {
 		return false;
 	}
+
+	//debug
+	// for (auto&& output : compiled_model.outputs()) {
+	//const std::string name = output.get_names().empty() ? "NONE" : output.get_any_name();
+	//if (name == "NONE")
+	//{
+	//	continue;
+	//}
+
+	//const ov::Tensor& output_tensor = infer_request.get_tensor(name);
+
+	//auto data_size = output_tensor.get_size();
+	//auto data = output_tensor.data<uint8_t>();
+	//int rows = surfaceHeight;
+	//int cols = surfaceWidth;
+	////copy vector to mat
+	//cv::Mat channelR(input_shape[2], input_shape[3], CV_8UC1, data);
+	//cv::Mat channelG(input_shape[2], input_shape[3], CV_8UC1, data + input_shape[1] * input_shape[2]);
+	//cv::Mat channelB(input_shape[2], input_shape[3], CV_8UC1, data + 2 * input_shape[1] * input_shape[2]);
+	//// RGB2BGR
+	//std::vector<cv::Mat> channels{ channelB, channelG, channelR };
+	//// Create the output matrix
+	//cv::Mat outputImage;
+	//merge(channels, outputImage);
+	////cv::Mat outputImage(cv::Size(cols, rows), CV_8UC3, data);
+	//cv::imwrite("styled.png", outputImage);
+    //}
 }

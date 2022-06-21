@@ -11,6 +11,7 @@
 #define SAFE_OCL_FREE(P, FREE_FUNC)  { if (P) { FREE_FUNC(P); P = NULL; } }
 #define EXT_INIT(_p, _name) _name = (_name##_fn) clGetExtensionFunctionAddressForPlatform((_p), #_name); res &= (_name != NULL);
 
+#define DEBUG_FALG false
 
     // OCLProgram methods
     OCLProgram::OCLProgram(OCLEnv* env) : m_program(nullptr), m_env(env) {}
@@ -419,6 +420,13 @@
 
 
     bool SourceConversion::SetArgumentsRGBbuffertoRGBA(cl_mem in_rgbSurf, ID3D11Texture2D* out_rgbSurf, int cols, int rows) {
+#if DEBUG_FALG
+        cl_command_queue cmdQueue = m_env->GetCommandQueue();
+        if (!cmdQueue) {
+            return false;
+        }
+        printClVector(in_rgbSurf, cols * rows * 3, 0, cmdQueue);
+#endif
         cl_mem out_hdlRGB = m_env->CreateSharedSurface(out_rgbSurf, 0, false); //rgb surface only has one view,default as 0
         if (!out_hdlRGB) {
             return false;
@@ -484,11 +492,11 @@
         {
             std::cout << "erro" << std::endl;
         }*/
-        // test_end
-        //if (!m_RGBToRGBbuffer) {
-          //  printClVector(sharedSurfaces[0], 1280 * 720 * 4, cmdQueue);
-        //    //printClVector(input, 1280 * 720 * 3, cmdQueue);
-        //}
+#if DEBUG_FLAG
+        if (m_RGBToRGBbuffer) { //image
+            printClVector(sharedSurfaces[0], 3060 * 1204 * 4,  1, cmdQueue);
+         }
+#endif
 
 
         if (!m_env->EnqueueReleaseSurfaces(&sharedSurfaces[0], sharedSurfaces.size(), false)) {
@@ -510,13 +518,22 @@
         return (error == CL_SUCCESS);
     }
 
-    void SourceConversion::printClVector(cl_mem& clVector, int length, cl_command_queue& commands, int printrowlen)
+    void SourceConversion::printClVector(cl_mem& clVector, int length, cl_command_queue& commands, int datatype, int printrowlen)
     {
         uint8_t* tmp = new uint8_t[length];
-        //int err = clEnqueueReadBuffer(commands, clVector, CL_TRUE, 0, sizeof(uint8_t) * length, tmp, 0, NULL, NULL);
-        size_t origin[3] = { 0,0,0 };
-        size_t region[3] = { 1280,720,1 };
-        int err = clEnqueueReadImage(commands, clVector, CL_TRUE, origin, region, 0, 0, tmp, 0, NULL, NULL);
+        int err;
+        if (datatype == 0) // buffer
+        {
+            err = clEnqueueReadBuffer(commands, clVector, CL_TRUE, 0, sizeof(uint8_t) * length, tmp, 0, NULL, NULL);
+        }
+        if (datatype == 1) // image
+        {
+            size_t origin[3] = { 0,0,0 };
+            size_t region[3] = { 3060,1204,1 };
+            err = clEnqueueReadImage(commands, clVector, CL_TRUE, origin, region, 0, 0, tmp, 0, NULL, NULL);
+        }
+      
+        
         if (err != CL_SUCCESS)
         {
             printf("Error: Failed to read output array! %d\n", err);

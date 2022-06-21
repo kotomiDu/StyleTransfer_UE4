@@ -172,7 +172,7 @@
 
         bool SetArgumentsRGBtoRGBbuffer(ID3D11Texture2D* in_nv12Surf, cl_mem out_rgbSurf, int cols, int rows);
         bool SetArgumentsRGBbuffertoRGBA(cl_mem in_rgbSurf, ID3D11Texture2D* out_rgbSurf, int cols, int rows);
-        void printClVector(cl_mem& clVector, int length, cl_command_queue& commands, int printrowlen = -1);
+        void printClVector(cl_mem& clVector, int length, cl_command_queue& commands, int datatype, int printrowlen = -1);
     private:
         cl_kernel   m_kernelRGBtoRGBbuffer;
         cl_kernel   m_kernelRGBbuffertoRGBA;
