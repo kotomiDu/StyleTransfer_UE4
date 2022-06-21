@@ -13,7 +13,7 @@ void StyleTransferViewExtension::BeginRenderViewFamily(FSceneViewFamily& InViewF
 {
 	if (InViewFamily.GetFeatureLevel() >= ERHIFeatureLevel::SM5 && CVarTransferEnabled.GetValueOnAnyThread() == 2)
 	{
-		InViewFamily.SetSecondarySpatialUpscalerInterface(new StyleTransferSpatialUpscaler());
+		InViewFamily.SetSecondarySpatialUpscalerInterface(new StyleTransferSpatialUpscaler(TSharedPtr<FStyleTransferSpatialUpscalerData>(new FStyleTransferSpatialUpscalerData())));
 	}
 }
 

@@ -4,13 +4,14 @@
 
 struct FStyleTransferSpatialUpscalerData
 {	
-	void* device;
+	bool initialized = false;
+	FScreenPassTexture ConvertTexture[2];
 };
 
 class StyleTransferSpatialUpscaler final : public ISpatialUpscaler
 {
 public:
-	StyleTransferSpatialUpscaler();
+	StyleTransferSpatialUpscaler(TSharedPtr<FStyleTransferSpatialUpscalerData> InViewData);
 	virtual ~StyleTransferSpatialUpscaler();
 
 	// ISpatialUpscaler interface
@@ -19,4 +20,6 @@ public:
 	ISpatialUpscaler* Fork_GameThread(const class FSceneViewFamily& ViewFamily) const override;
 	FScreenPassTexture AddPasses(FRDGBuilder& GraphBuilder, const FViewInfo& View, const FInputs& PassInputs) const override;
 
+private:
+	TSharedPtr<FStyleTransferSpatialUpscalerData> ViewData;
 };
