@@ -296,7 +296,7 @@ OpenVinoData::Infer(
 
 bool OpenVinoData::Create_OCLCtx(ID3D11Device* d3dDevice)
 {
-	if (ocl.Init()) {
+	if (!ocl.Init()) {
 		return -1;
 	}
 	oclEnv = ocl.GetEnv(d3dDevice).get();

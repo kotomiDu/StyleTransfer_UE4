@@ -11,7 +11,7 @@
 #define SAFE_OCL_FREE(P, FREE_FUNC)  { if (P) { FREE_FUNC(P); P = NULL; } }
 #define EXT_INIT(_p, _name) _name = (_name##_fn) clGetExtensionFunctionAddressForPlatform((_p), #_name); res &= (_name != NULL);
 
-#define DEBUG_FALG false
+#define DEBUG_FLAG true
 
     // OCLProgram methods
     OCLProgram::OCLProgram(OCLEnv* env) : m_program(nullptr), m_env(env) {}
@@ -420,12 +420,12 @@
 
 
     bool SourceConversion::SetArgumentsRGBbuffertoRGBA(cl_mem in_rgbSurf, ID3D11Texture2D* out_rgbSurf, int cols, int rows) {
-#if DEBUG_FALG
+#if DEBUG_FLAG
         cl_command_queue cmdQueue = m_env->GetCommandQueue();
         if (!cmdQueue) {
             return false;
         }
-        printClVector(in_rgbSurf, cols * rows * 3, 0, cmdQueue);
+        printClVector(in_rgbSurf, cols * rows * 3,  cmdQueue,0);
 #endif
         cl_mem out_hdlRGB = m_env->CreateSharedSurface(out_rgbSurf, 0, false); //rgb surface only has one view,default as 0
         if (!out_hdlRGB) {
@@ -494,7 +494,7 @@
         }*/
 #if DEBUG_FLAG
         if (m_RGBToRGBbuffer) { //image
-            printClVector(sharedSurfaces[0], 3060 * 1204 * 4,  1, cmdQueue);
+            printClVector(sharedSurfaces[0], 3060 * 1204 * 4,   cmdQueue, 1);
          }
 #endif
 
@@ -542,7 +542,7 @@
         if (printrowlen < 0)	// print all as one line
         {
             std::ofstream myfile;
-            myfile.open("log.txt", std::ios::out | std::ios::binary);
+            myfile.open("log_"+std::to_string(datatype)+".txt", std::ios::out | std::ios::binary);
             for (size_t i = 0; i < length; i++) {
                 //std::cout << (int)data[i] << " ";
                 myfile << tmp[i];
