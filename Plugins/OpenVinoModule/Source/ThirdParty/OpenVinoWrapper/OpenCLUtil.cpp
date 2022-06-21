@@ -594,6 +594,31 @@
         std::string exePath(module_name);
         return exePath.substr(0, exePath.find_last_of("\\/") + 1);
     }
+
+    static std::string getPathToHandle()
+    {
+        char path[MAX_PATH];
+        HMODULE hm = NULL;
+
+        if (GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+            GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+            (LPCSTR)"OpenVinoWrapper.dll", &hm) == 0)
+        {
+            int ret = GetLastError();
+            fprintf(stderr, "GetModuleHandle failed, error = %d\n", ret);
+            // Return or however you want to handle an error.
+        }
+        if (GetModuleFileName(hm, path, sizeof(path)) == 0)
+        {
+            int ret = GetLastError();
+            fprintf(stderr, "GetModuleFileName failed, error = %d\n", ret);
+            // Return or however you want to handle an error.
+        }
+        std::string dllPath(path);
+        return dllPath.substr(0, dllPath.find_last_of("\\/") + 1);
+
+    }
+
     static std::string readFile(const char* filename)
     {
         std::cout << "Info: try to open file (" << filename << ") in the current directory" << std::endl;
@@ -604,7 +629,7 @@
             // look in folder with executable
             input.clear();
 
-            std::string module_name = getPathToExe() + std::string(filename);
+            std::string module_name = getPathToHandle() + std::string(filename);
 
             std::cout << "Info: try to open file: " << module_name.c_str() << std::endl;
             input.open(module_name.c_str(), std::ios::binary);
