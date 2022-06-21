@@ -211,12 +211,44 @@ void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, enum ELevelTick Tick
 			last_out_width = transfer_width->GetInt();
 			last_out_height = transfer_height->GetInt();
 		}
+		else if (mode == 2)
+		{
+			UGameViewportClient* gameViewport = GetWorld()->GetGameViewport();
+			if (gameViewport != nullptr)
+			{
+				FSceneViewport* vp = gameViewport->GetGameViewport();
+				last_out_width = vp->GetSize().X;
+				last_out_height = vp->GetSize().Y;
+			}
+			else
+			{
+				last_out_width = 0;
+				last_out_height = 0;
+			}
+		}
 		OnResizeOutput(last_out_width, last_out_height, mode);
 	}
 
-	if (mode != 1)	// only cpu mode use buffer copy
+	if (mode == 0)
 		return;
+	
+	if (mode == 2)
+	{
+		UGameViewportClient* gameViewport = GetWorld()->GetGameViewport();
+		if (gameViewport != nullptr)
+		{
+			FSceneViewport* vp = gameViewport->GetGameViewport();
+			if (last_out_width != vp->GetSize().X || last_out_height != vp->GetSize().Y)
+			{
+				last_out_width = vp->GetSize().X;
+				last_out_height = vp->GetSize().Y;
+				OnResizeOutput(last_out_width, last_out_height, mode);
+			}
+		}
+		return;
+	}
 
+	// only cpu mode use buffer copy
 	// reset input tmp process buffer
 	if (input_size.X != 0 && input_size.Y != 0 && input_size != last_input_size)
 	{
