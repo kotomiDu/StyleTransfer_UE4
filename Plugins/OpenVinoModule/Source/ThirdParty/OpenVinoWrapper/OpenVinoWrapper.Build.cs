@@ -45,11 +45,11 @@ public class OpenVinoWrapper : ModuleRules
                 "ThirdParty", 
                 "OpenVinoWrapper");
 
-            CopyToBinariesAddRuntimeDependancies(Path.Combine(openVinoDir, "opencv/bin/dll_release"));
-            CopyToBinariesAddRuntimeDependancies(Path.Combine(openVinoDir, "openvino/bin/intel64/dll_release"));
+            //CopyToBinariesAddRuntimeDependancies(Path.Combine(openVinoDir, "opencv/bin/dll_release"));
+            //CopyToBinariesAddRuntimeDependancies(Path.Combine(openVinoDir, "openvino/bin/intel64/dll_release"));
 
-            CopyToBinariesAddRuntimeDependancies(openVinoDir, "opencv/bin/dll_release");
-            CopyToBinariesAddRuntimeDependancies(openVinoDir, "openvino/bin/intel64/dll_release");
+            CopyToBinariesAddRuntimeDependancies(openVinoDir, "bin");
+            //CopyToBinariesAddRuntimeDependancies(openVinoDir, "openvino/bin/intel64/dll_release");
         }
         else
         {
