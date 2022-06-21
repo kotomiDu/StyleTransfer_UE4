@@ -89,7 +89,7 @@ OpenVinoData::Initialize(
 	network.reshape(input_shapes);
 
 	input_info->setLayout(Layout::NCHW);
-	input_info->setPrecision(Precision::U8);
+	input_info->setPrecision(Precision::FP32);
 
 	DataPtr output_info = network.getOutputsInfo().begin()->second;
 	output_name = network.getOutputsInfo().begin()->first;
@@ -110,7 +110,7 @@ OpenVinoData::Initialize(
  * @param modelLabelFilePath
  */
 bool
-OpenVinoData::Infer(
+OpenVinoData::Infer( 
 	std::string filePath, int* w, int* h, float* out)
 {
 	// --------------------------- 5. Create infer request -------------------------------------------------
@@ -127,7 +127,7 @@ OpenVinoData::Infer(
 	cv::Mat image = cv::imread(filePath);
 	cv::Mat outputImage;
 	cv::cvtColor(image, image, cv::COLOR_BGRA2RGB);
-
+	image.convertTo(image, CV_32F, 1.0 / 255, 0);
 	/* Resize manually and copy data from the image to the input blob */
 	Blob::Ptr input = infer_request.GetBlob(input_name);
 	auto input_data = input->buffer().as<PrecisionTrait<Precision::U8>::value_type*>();
@@ -140,7 +140,8 @@ OpenVinoData::Infer(
 
 	for (size_t pid = 0; pid < image_size; ++pid) {
 		for (size_t ch = 0; ch < channels_number; ++ch) {
-			input_data[ch * image_size + pid] = image.at<cv::Vec3b>(pid)[ch];
+			//input of new model is in range -1,1 with float precision
+			input_data[ch * image_size + pid] = image.at<cv::Vec3f>(pid)[ch]*2-1;
 		}
 	}
 	// -----------------------------------------------------------------------------------------------------
@@ -160,26 +161,30 @@ OpenVinoData::Infer(
 	float* output_data_pointer = blobMapped.as<float*>();
 	std::vector<float> output_data(output_data_pointer, output_data_pointer + length);
 
+	//output of new model is in range (0,255)
+	std::vector<uint8_t> convert_output_data;
+	convert_output_data.reserve(output_data.size());
+	for (const auto& f : output_data) {
+		convert_output_data.push_back(uint8_t(f));
+	}
+
 	//align result dimension
 	//output_data  = transpose4d(output_data, ieSizeToVector(output_shape), { 0, 3, 1, 2 });
 	int rows = output_shape[2];
 	int cols = output_shape[3];
-	if (output_data.size() == rows * cols * 3) // check that the rows and cols match the size of your vector
+	if (convert_output_data.size() == rows * cols * 3) // check that the rows and cols match the size of your vector
 	{
 		//copy vector to mat
-		cv::Mat channelR(rows, cols, CV_32FC1, output_data.data());
-		cv::Mat channelG(rows, cols, CV_32FC1, output_data.data() + cols * rows);
-		cv::Mat channelB(rows, cols, CV_32FC1, output_data.data() + 2 * cols * rows);
+		cv::Mat channelR(rows, cols, CV_32FC1, convert_output_data.data());
+		cv::Mat channelG(rows, cols, CV_32FC1, convert_output_data.data() + cols * rows);
+		cv::Mat channelB(rows, cols, CV_32FC1, convert_output_data.data() + 2 * cols * rows);
 		// RGB2BGR
 		std::vector<cv::Mat> channels{ channelB, channelG, channelR };
 
 		// Create the output matrix
 		merge(channels, outputImage);
 	}
-	//postprocessing
-	// normolize  (-1,1) to (0,255)
-	cv::normalize(outputImage, outputImage, 0, 255, cv::NORM_MINMAX);
-
+	
 	int arraysize = outputImage.rows * outputImage.cols * outputImage.channels();
 	memcpy(out, outputImage.data, arraysize * sizeof(float));
 	*w = outputImage.size().width;
@@ -210,6 +215,7 @@ OpenVinoData::Infer(
 
 	cv::Mat outputImage;
 	cv::Mat image(inheight, inwidth, CV_8UC3, inferdata);
+	image.convertTo(image, CV_32F, 1.0 / 255, 0);
 	if (debug_flag)
 	{
 		cv::imwrite("input.png", image);
@@ -220,7 +226,7 @@ OpenVinoData::Infer(
 	
 	/* Resize manually and copy data from the image to the input blob */
 	Blob::Ptr input = infer_request.GetBlob(input_name);
-	auto input_data = input->buffer().as<PrecisionTrait<Precision::U8>::value_type*>();
+	auto input_data = input->buffer().as<PrecisionTrait<Precision::FP32>::value_type*>();
 
 	
 	auto size = cv::Size(input_info->getTensorDesc().getDims()[3], input_info->getTensorDesc().getDims()[2]);
@@ -231,7 +237,8 @@ OpenVinoData::Infer(
 
 	for (size_t pid = 0; pid < image_size; ++pid) {
 		for (size_t ch = 0; ch < channels_number; ++ch) {
-			input_data[ch * image_size + pid] = image.at<cv::Vec3b>(pid)[ch];
+			//input of new model is in range -1,1 with float precision
+			input_data[ch * image_size + pid] = image.at<cv::Vec3f>(pid)[ch]*2-1;
 		}
 	}
 	// -----------------------------------------------------------------------------------------------------
@@ -251,27 +258,30 @@ OpenVinoData::Infer(
 	float* output_data_pointer = blobMapped.as<float*>();
 	std::vector<float> output_data(output_data_pointer, output_data_pointer + length);
 
+	//output of new model is in range (0,255)
+	std::vector<uint8_t> convert_output_data;
+	convert_output_data.reserve(output_data.size());
+	for (const auto& f : output_data) {
+		convert_output_data.push_back(uint8_t(f));
+	}
+
 	//align result dimension
 	//output_data  = transpose4d(output_data, ieSizeToVector(output_shape), { 0, 3, 1, 2 });
 	int rows = output_shape[2];
 	int cols = output_shape[3];
-	if (output_data.size() == rows * cols * 3) // check that the rows and cols match the size of your vector
+	if (convert_output_data.size() == rows * cols * 3) // check that the rows and cols match the size of your vector
 	{
 		//copy vector to mat
-		cv::Mat channelR(rows, cols, CV_32FC1, output_data.data());
-		cv::Mat channelG(rows, cols, CV_32FC1, output_data.data() + cols * rows);
-		cv::Mat channelB(rows, cols, CV_32FC1, output_data.data() + 2 * cols * rows);
+		cv::Mat channelR(rows, cols, CV_8UC1, convert_output_data.data());
+		cv::Mat channelG(rows, cols, CV_8UC1, convert_output_data.data() + cols * rows);
+		cv::Mat channelB(rows, cols, CV_8UC1, convert_output_data.data() + 2 * cols * rows);
 		// RGB2BGR
 		std::vector<cv::Mat> channels{ channelB, channelG, channelR };
 
 		// Create the output matrix
 		merge(channels, outputImage);
 	}
-	//postprocessing
-	// normolize  (-1,1) to (0,255)
-	cv::normalize(outputImage, outputImage, 0, 255, cv::NORM_MINMAX);
 
-	outputImage.convertTo(outputImage, CV_8U);
 	if(debug_flag)
 	{
 		cv::imwrite("output.png", outputImage);
