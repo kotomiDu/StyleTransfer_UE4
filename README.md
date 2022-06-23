@@ -3,6 +3,8 @@ realtime style transfer in unreal engine
 
 ## Steps for Release build 
 
+* Make Sure only enable one Intel iGPU 
+
 * Right click `StyleTransfer.uproject`, click `generate visual studio project file`, then `StyleTransfer.sln` is appeared
 
 * Open `StyleTransfer.sln`, select `Development Editor` to build
@@ -11,10 +13,10 @@ realtime style transfer in unreal engine
 
 * Choose `folder\for\Release project`, waiting for the compiling result
 
-* Go to `folder\for\Release project`, run `StyleTransfer.exe -WINDOWED -ResX=1920 -ResY=1080 -ExecCmds="r.OVST.Width 512, r.OVST.Height 512"`
+* Go to `folder\for\Release project`, run `StyleTransfer.exe -WINDOWED -ResX=512 -ResY=512 -ExecCmds="r.OVST.Width 512, r.OVST.Height 512"`
   ![Result](doc/Result_manga.png)
 
-* Press `~` to change the output size, for example, `r.OVST.Width 256` or `r.OVST.Height 256`
+* Press `~` to change mode, for example, `r.OVST.Enabled 2`.  
 
   ## Performance
 
