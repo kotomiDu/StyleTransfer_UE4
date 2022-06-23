@@ -8,6 +8,7 @@
 #include "Windows/AllowWindowsPlatformTypes.h"
 #include <d3d11.h>
 #include "Windows/HideWindowsPlatformTypes.h"
+#include "ThirdParty\OpenVinoWrapper\OpenVinoWrapper.h"
 
 
 
@@ -217,6 +218,7 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 					int width = PassParameters->OVST.Width;
 					int height = PassParameters->OVST.Height;
 					// call open vino pass here ...
+					OpenVino_Infer_FromDXData(inputTex, outputTex, width, height, 0);
 
 				});
 		}

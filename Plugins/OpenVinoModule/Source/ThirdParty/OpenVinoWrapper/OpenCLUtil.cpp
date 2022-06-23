@@ -11,7 +11,7 @@
 #define SAFE_OCL_FREE(P, FREE_FUNC)  { if (P) { FREE_FUNC(P); P = NULL; } }
 #define EXT_INIT(_p, _name) _name = (_name##_fn) clGetExtensionFunctionAddressForPlatform((_p), #_name); res &= (_name != NULL);
 
-#define DEBUG_FLAG true
+#define DEBUG_FLAG false
 
     // OCLProgram methods
     OCLProgram::OCLProgram(OCLEnv* env) : m_program(nullptr), m_env(env) {}
@@ -493,7 +493,7 @@
             std::cout << "erro" << std::endl;
         }*/
 #if DEBUG_FLAG
-        if (m_RGBToRGBbuffer) { //image
+        if (!m_RGBToRGBbuffer) { //image
             printClVector(sharedSurfaces[0], 3060 * 1204 * 4,   cmdQueue, 1);
          }
 #endif
