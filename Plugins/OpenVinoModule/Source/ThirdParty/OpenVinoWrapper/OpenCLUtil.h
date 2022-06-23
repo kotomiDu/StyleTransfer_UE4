@@ -11,6 +11,7 @@
 #define EXT_DECLARE(_name) _name##_fn _name
 
 
+#define DEBUG_FLAG true
     class OCLEnv;
 
     class OCLProgram {
@@ -148,6 +149,7 @@
         virtual OCLKernelArgType Type() { return OCL_KERNEL_ARG_INT; }
         virtual bool Set(cl_kernel kernel);
         void SetVal(cl_int val) { m_val = val; }
+        cl_int GetVal() { return m_val; }
     private:
         cl_int m_val;
     };
@@ -173,6 +175,9 @@
         bool SetArgumentsRGBtoRGBbuffer(ID3D11Texture2D* in_nv12Surf, cl_mem out_rgbSurf, int cols, int rows);
         bool SetArgumentsRGBbuffertoRGBA(cl_mem in_rgbSurf, ID3D11Texture2D* out_rgbSurf, int cols, int rows);
         void printClVector(cl_mem& clVector, int length, cl_command_queue& commands, int datatype, int printrowlen = -1);
+#if DEBUG_FLAG
+        int surface_cols, surface_rows;
+#endif
     private:
         cl_kernel   m_kernelRGBtoRGBbuffer;
         cl_kernel   m_kernelRGBbuffertoRGBA;
