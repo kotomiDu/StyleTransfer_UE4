@@ -158,6 +158,11 @@ bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height, int inmode)
 		// Set ocl device
 		if (RHIName == TEXT("D3D11"))
 		{
+			/*int expectedW, expectedH;
+			if (OpenVino_GetSuitableSTsize(width, height, &expectedW, &expectedH))
+			{
+				UE_LOG(LogStyleTransfer, Log, TEXT("get sutitable size width = %d, height = %d"), expectedW, expectedH);
+			}*/
 			// Set device here for OpenVino_InitializeOcl
 			void* device = GDynamicRHI->RHIGetNativeDevice();
 			if (!OpenVino_Initialize_BaseOCL(TCHAR_TO_ANSI(*xml_file_path), TCHAR_TO_ANSI(*xml_file_path), device,width, height))

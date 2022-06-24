@@ -128,4 +128,18 @@ extern "C"
 		int surfaceWidth,
 		int surfaceHeight,
 		bool debug_flag);
+	
+
+	/*
+	* @brief This method is called to get suitable resolution for ReCoNet style transfer model
+	* @param inputWidth, width from user side
+	* @param inputHeight height from user side
+	* @param expectedWidth, width from model expectation
+	* @param expectedHeight, height from model expectation
+	*/
+	DLLEXPORT bool OpenVino_GetSuitableSTsize(
+			int inputWidth,
+			int inputHeight,
+			int* expectedWidth,
+			int* expectedHeight);
 }

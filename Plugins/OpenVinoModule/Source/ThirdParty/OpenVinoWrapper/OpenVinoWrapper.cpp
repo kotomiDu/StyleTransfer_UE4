@@ -264,3 +264,39 @@ OpenVino_Infer_FromDXData(
 		return false;
 	}
 }
+
+DLLEXPORT
+bool __cdecl
+OpenVino_GetSuitableSTsize(
+	int inputWidth,
+	int inputHeight,
+	int* expectedWidth,
+	int* expectedHeight)
+{
+	try
+	{
+		last_error.clear();
+		*expectedWidth = (int)floor((inputWidth + 3) / 4.0) * 4;
+		*expectedHeight = (int)floor((inputHeight + 3) / 4.0) * 4;
+
+		if (*expectedWidth == inputWidth
+			&& *expectedHeight == inputHeight)
+		{
+			std::cout << "The original input shape (width, height) is not suitable:" << to_string(inputWidth) << "," << to_string(inputHeight) << std::endl;
+			std::cout << ";try new input shape (width, height) :" << to_string(*expectedWidth) << "," << to_string(*expectedHeight) << std::endl;
+		}
+		return true;
+	}
+	catch (std::exception& ex)
+	{
+		last_error = ex.what();
+
+		return false;
+	}
+	catch (...)
+	{
+		last_error = "Cannot get sutitable size";
+
+		return false;
+	}	
+}
