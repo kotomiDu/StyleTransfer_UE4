@@ -48,6 +48,10 @@ public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction);
 
 	inline int32 GetMode() { return mode; }
+
+	inline int GetOutputWidth() { return last_out_width; }
+	inline int GetOutputHeight() { return last_out_height; }
+
 private:
 
 	/** Helper function to dynamically create a new texture from raw pixel data. */

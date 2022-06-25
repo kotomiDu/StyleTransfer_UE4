@@ -158,15 +158,12 @@ bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height, int inmode)
 		// Set ocl device
 		if (RHIName == TEXT("D3D11"))
 		{
-			/*int expectedW, expectedH;
-			if (OpenVino_GetSuitableSTsize(width, height, &expectedW, &expectedH))
-			{
-				UE_LOG(LogStyleTransfer, Log, TEXT("get sutitable size width = %d, height = %d"), expectedW, expectedH);
-			}*/
-			// Set device here for OpenVino_InitializeOcl
-			void* device = GDynamicRHI->RHIGetNativeDevice();
-			if (!OpenVino_Initialize_BaseOCL(TCHAR_TO_ANSI(*xml_file_path), TCHAR_TO_ANSI(*xml_file_path), device,width, height))
-				return false;
+			ENQUEUE_RENDER_COMMAND(CreateOCLOpenVino)(
+				[this, width, height](FRHICommandListImmediate& RHICmdList)
+				{
+					OpenVino_Initialize_BaseOCL(TCHAR_TO_ANSI(*xml_file_path), TCHAR_TO_ANSI(*xml_file_path), RHICmdList.GetNativeDevice(), width, height);
+				});
+			return true;
 		}
 		else
 		{
@@ -222,8 +219,7 @@ void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, enum ELevelTick Tick
 			if (gameViewport != nullptr)
 			{
 				FSceneViewport* vp = gameViewport->GetGameViewport();
-				last_out_width = vp->GetSize().X;
-				last_out_height = vp->GetSize().Y;
+				OpenVino_GetSuitableSTsize(vp->GetSize().X, vp->GetSize().Y, &last_out_width, &last_out_height);
 			}
 			else
 			{
@@ -243,10 +239,12 @@ void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, enum ELevelTick Tick
 		if (gameViewport != nullptr)
 		{
 			FSceneViewport* vp = gameViewport->GetGameViewport();
-			if (last_out_width != vp->GetSize().X || last_out_height != vp->GetSize().Y)
+			int newWidth, newHeight;
+			OpenVino_GetSuitableSTsize(vp->GetSize().X, vp->GetSize().Y, &newWidth, &newHeight);
+			if (last_out_width != newWidth || last_out_height != newHeight)
 			{
-				last_out_width = vp->GetSize().X;
-				last_out_height = vp->GetSize().Y;
+				last_out_width = newWidth;
+				last_out_height = newHeight;
 				OnResizeOutput(last_out_width, last_out_height, mode);
 			}
 		}
