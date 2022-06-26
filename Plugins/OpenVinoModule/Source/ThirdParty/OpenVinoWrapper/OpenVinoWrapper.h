@@ -142,4 +142,10 @@ extern "C"
 			int inputHeight,
 			int* expectedWidth,
 			int* expectedHeight);
+	/*
+	* @brief This method only can be called after OpenVino_GetSuitableSTsize()
+	*/
+	DLLEXPORT bool OpenVINO_GetCurrentSTsize(
+		int* width,
+		int* height);
 }

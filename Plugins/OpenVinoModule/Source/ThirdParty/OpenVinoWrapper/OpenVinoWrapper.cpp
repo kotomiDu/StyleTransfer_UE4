@@ -36,6 +36,9 @@ using namespace std;
 static string last_error;
 // This is a pointer to initialized OpenVino model structures, assigned by "OpenVino_Initialize"
 static unique_ptr<OpenVinoData> initializedData;
+// This variable holds the model width and height
+static int modelWidth;
+static int modelHeight;
 
 /*
  * @brief This method is called to make initialization of the OpenVino library and load the
@@ -285,6 +288,9 @@ OpenVino_GetSuitableSTsize(
 			std::cout << "The original input shape (width, height) is not suitable:" << to_string(inputWidth) << "," << to_string(inputHeight) << std::endl;
 			std::cout << ";try new input shape (width, height) :" << to_string(*expectedWidth) << "," << to_string(*expectedHeight) << std::endl;
 		}
+		modelWidth = *expectedWidth;
+		modelHeight = *expectedHeight;
+
 		return true;
 	}
 	catch (std::exception& ex)
@@ -299,4 +305,30 @@ OpenVino_GetSuitableSTsize(
 
 		return false;
 	}	
+}
+
+DLLEXPORT
+bool __cdecl
+OpenVINO_GetCurrentSTsize(
+	int* width,
+	int* height)
+{
+	try
+	{
+		last_error.clear();
+		*width = modelWidth;
+		*height = modelHeight;
+		return true;
+	}
+	catch (std::exception& ex)
+	{
+		last_error = ex.what();
+
+		return false;
+	}
+	catch (...)
+	{
+		last_error = "Cannot get current style transfer size";
+		return false;
+	}
 }
