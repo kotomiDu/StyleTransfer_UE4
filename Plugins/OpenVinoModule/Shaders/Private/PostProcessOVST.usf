@@ -9,7 +9,9 @@
 // SHADER RESOURCES
 //
 // =====================================================================================
-Texture2D<float4>   InputTexture;
+Texture2D<float4> InputTexture;
+SamplerState ColorSampler;
+float2 OutExtent;
 RWTexture2D<float4> OutputTexture;
 
 // =====================================================================================
@@ -22,12 +24,14 @@ RWTexture2D<float4> OutputTexture;
 void MainCS(uint3 LocalThreadId : SV_GroupThreadID, uint3 WorkGroupId : SV_GroupID, uint3 Dtid : SV_DispatchThreadID)
 {
 	uint2 st = Dtid.xy;
-	OutputTexture[st] = InputTexture[st];
+	float2 uv = (st + 0.5)/OutExtent;
+	OutputTexture[st] = InputTexture.SampleLevel(ColorSampler, uv, 0);
 }
 #endif // COMPUTE_SHADER
 
 void MainPS(noperspective float4 UVAndScreenPos : TEXCOORD0, float4 SvPosition : SV_POSITION, out float4 OutColor : SV_Target0)
 {
 	uint2 st = uint2(SvPosition.xy);
-	OutColor.rgb = InputTexture[st].rgb;
+	float2 uv = (st + 0.5)/OutExtent;
+	OutColor.rgb = InputTexture.SampleLevel(ColorSampler, uv, 0);
 }
