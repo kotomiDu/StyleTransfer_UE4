@@ -54,6 +54,9 @@ class OpenVinoData
 	OCLEnv* oclEnv;
 	OCLFilterStore* oclStore;
 	SourceConversion* srcConversionKernel;
+	ID3D11DeviceContext* m_pD3D11Cxt;
+	ID3D11Device* m_pD3D11Dev;
+	ID3D11Texture2D* m_ovSurfaceRGBA_cpu_copy;
 
 public:
 	OpenVinoData() = default;

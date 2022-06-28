@@ -296,6 +296,9 @@ OpenVinoData::Infer(
 
 bool OpenVinoData::Create_OCLCtx(ID3D11Device* d3dDevice)
 {
+	m_pD3D11Dev = d3dDevice;	
+	m_pD3D11Dev->GetImmediateContext(&m_pD3D11Cxt);
+
 	if (!ocl.Init()) {
 		return -1;
 	}
@@ -322,6 +325,25 @@ void OpenVinoData::Initialize_BaseOCL(
 	int inferWidth,
 	int inferHeight)
 {
+	D3D11_TEXTURE2D_DESC desc_ovrgba_copy;
+
+	desc_ovrgba_copy.Width = inferWidth;
+	desc_ovrgba_copy.Height = inferHeight;
+	desc_ovrgba_copy.MipLevels = 1;
+	desc_ovrgba_copy.ArraySize = 1;
+	desc_ovrgba_copy.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	desc_ovrgba_copy.SampleDesc.Count = 1;
+	desc_ovrgba_copy.SampleDesc.Quality = 0;
+	desc_ovrgba_copy.BindFlags = 0;
+	desc_ovrgba_copy.Usage = D3D11_USAGE_STAGING;
+	desc_ovrgba_copy.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+	desc_ovrgba_copy.MiscFlags = 0;
+	HRESULT  r = m_pD3D11Dev->CreateTexture2D(&desc_ovrgba_copy, 0, &m_ovSurfaceRGBA_cpu_copy);
+	if (FAILED(r))
+	{
+		throw std::runtime_error("Can't create DX texture");
+	}
+
 	//1) Reading network 
 	ov::Core core;
 	core.set_property(ov::cache_dir("cache"));
@@ -413,6 +435,24 @@ bool OpenVinoData::Infer(
 	if (!srcConversionKernel->Run()) {
 		return false;
 	}
+
+
+	if (debug_flag)
+	{
+		m_pD3D11Cxt->CopyResource(m_ovSurfaceRGBA_cpu_copy, output_surface);
+		UINT subResource = ::D3D11CalcSubresource(0, 0, 1);
+		D3D11_MAPPED_SUBRESOURCE mappedTex;
+		HRESULT r = m_pD3D11Cxt->Map(m_ovSurfaceRGBA_cpu_copy, subResource, D3D11_MAP_READ, 0, &mappedTex);
+		if (FAILED(r))
+		{
+			throw std::runtime_error("surface mapping failed!");
+		}
+		cv::Mat m(surfaceHeight, surfaceWidth, CV_8UC4, mappedTex.pData, mappedTex.RowPitch);
+		cv::cvtColor(m, m, cv::COLOR_RGBA2BGR);
+		cv::imwrite("output_texture.png", m);
+
+	}
+	
 
 	//debug
 	// for (auto&& output : compiled_model.outputs()) {
