@@ -397,7 +397,7 @@ bool OpenVinoData::Infer(
 		clog << "The surface size is not consistent with model input size" << endl;
 	}
 
-
+	srcConversionKernel->debug_flag = debug_flag;
 	if (!srcConversionKernel->SetArgumentsRGBtoRGBbuffer(input_surface, _inputBuffer.get(), surfaceWidth, surfaceHeight)) {
 		return false;
 	}

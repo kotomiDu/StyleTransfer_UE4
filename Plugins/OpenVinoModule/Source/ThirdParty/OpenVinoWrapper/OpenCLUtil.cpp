@@ -11,7 +11,6 @@
 #define SAFE_OCL_FREE(P, FREE_FUNC)  { if (P) { FREE_FUNC(P); P = NULL; } }
 #define EXT_INIT(_p, _name) _name = (_name##_fn) clGetExtensionFunctionAddressForPlatform((_p), #_name); res &= (_name != NULL);
 
-#define DEBUG_FLAG true
 
     // OCLProgram methods
     OCLProgram::OCLProgram(OCLEnv* env) : m_program(nullptr), m_env(env) {}
@@ -398,10 +397,11 @@
         return true;
     }
     bool SourceConversion::SetArgumentsRGBtoRGBbuffer(ID3D11Texture2D* in_rgbSurf, cl_mem out_rgbSurf, int cols, int rows) {
-#if DEBUG_FLAG
-        surface_cols = cols;
-        surface_rows = rows;
-#endif
+        if(debug_flag)
+        {
+            surface_cols = cols;
+            surface_rows = rows;
+        }
         cl_mem in_hdlRGB = m_env->CreateSharedSurface(in_rgbSurf, 0, true); //rgb surface only has one view,default as 0
         if (!in_hdlRGB) {
             return false;
@@ -424,15 +424,16 @@
 
 
     bool SourceConversion::SetArgumentsRGBbuffertoRGBA(cl_mem in_rgbSurf, ID3D11Texture2D* out_rgbSurf, int cols, int rows) {
-#if DEBUG_FLAG
-        surface_cols = cols;
-        surface_rows = rows;
-        /*cl_command_queue cmdQueue = m_env->GetCommandQueue();
-        if (!cmdQueue) {
-            return false;
+        if(debug_flag)
+        {
+                surface_cols = cols;
+                surface_rows = rows;
+                /*cl_command_queue cmdQueue = m_env->GetCommandQueue();
+                if (!cmdQueue) {
+                    return false;
+                }
+                printClVector(in_rgbSurf, cols * rows * 3,  cmdQueue,0);*/
         }
-        printClVector(in_rgbSurf, cols * rows * 3,  cmdQueue,0);*/
-#endif
         cl_mem out_hdlRGB = m_env->CreateSharedSurface(out_rgbSurf, 0, false); //rgb surface only has one view,default as 0
         if (!out_hdlRGB) {
             return false;
@@ -498,15 +499,16 @@
         {
             std::cout << "erro" << std::endl;
         }*/
-#if DEBUG_FLAG
-        if (m_RGBToRGBbuffer) { //input texture 
-            printClVector(sharedSurfaces[0], surface_cols * surface_rows * 4, cmdQueue, 1);
-        }
+        if (debug_flag)
+        {
+            if (m_RGBToRGBbuffer) { //input texture 
+                printClVector(sharedSurfaces[0], surface_cols * surface_rows * 4, cmdQueue, 1);
+            }
 
-        if (!m_RGBToRGBbuffer) { //output texture 
-            printClVector(sharedSurfaces[0], surface_cols*surface_rows * 4,   cmdQueue, 2);
-         }
-#endif
+            if (!m_RGBToRGBbuffer) { //output texture 
+                printClVector(sharedSurfaces[0], surface_cols*surface_rows * 4,   cmdQueue, 2);
+             }
+        }
 
 
         if (!m_env->EnqueueReleaseSurfaces(&sharedSurfaces[0], sharedSurfaces.size(), false)) {
