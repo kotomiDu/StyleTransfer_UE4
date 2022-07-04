@@ -10,6 +10,12 @@
 #include "ImageUtils.h"
 #include "Slate/SceneViewport.h"
 #include "Widgets/Images/SImage.h"
+
+#include "GenericPlatform/GenericPlatformDriver.h"
+#if PLATFORM_WINDOWS
+#include "Windows/WindowsPlatformMisc.h"
+#endif
+
 using namespace std;
 
 DEFINE_LOG_CATEGORY(LogStyleTransfer);
@@ -62,6 +68,15 @@ UOpenVinoStyleTransfer::UOpenVinoStyleTransfer()
 
 	input_size.X = input_size.Y = 0;
 	last_input_size.X = last_input_size.Y = 0;
+
+	is_intel = false;
+#if PLATFORM_WINDOWS
+	FGPUDriverInfo GPUDriverInfo = FPlatformMisc::GetGPUDriverInfo(GRHIAdapterName);
+	if (GPUDriverInfo.IsIntel())
+	{
+		is_intel = true;
+	}
+#endif
 }
 
 UOpenVinoStyleTransfer* UOpenVinoStyleTransfer::GetInstance()
@@ -156,7 +171,7 @@ bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height, int inmode)
 		FString RHIName = GDynamicRHI->GetName();
 #if PLATFORM_WINDOWS
 		// Set ocl device
-		if (RHIName == TEXT("D3D11"))
+		if (is_intel && RHIName == TEXT("D3D11"))
 		{
 			ENQUEUE_RENDER_COMMAND(CreateOCLOpenVino)(
 				[this, width, height](FRHICommandListImmediate& RHICmdList)

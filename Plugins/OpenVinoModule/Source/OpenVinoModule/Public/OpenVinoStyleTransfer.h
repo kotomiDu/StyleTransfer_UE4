@@ -109,6 +109,7 @@ private:
 	FString xml_file_path;
 	FString bin_file_path;
 
+	bool is_intel;
 public:
 	FDelegateHandle m_OnBackBufferReadyToPresent;
 

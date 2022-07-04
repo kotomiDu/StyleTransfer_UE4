@@ -4,8 +4,9 @@
 
 struct FStyleTransferSpatialUpscalerData
 {	
+	bool isIntel;
 	bool initialized = false;
-	FScreenPassTexture ConvertTexture[2];
+	FScreenPassTexture ConvertTexture[6];
 };
 
 class StyleTransferSpatialUpscaler final : public ISpatialUpscaler
