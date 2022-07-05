@@ -24,7 +24,8 @@ BEGIN_SHADER_PARAMETER_STRUCT(FOVSTPassParameters, )
 END_SHADER_PARAMETER_STRUCT()
 
 BEGIN_SHADER_PARAMETER_STRUCT(FParametersOCL, )
-	SHADER_PARAMETER_STRUCT_INCLUDE(FOVSTPassParameters, OVST)
+	SHADER_PARAMETER_RDG_TEXTURE(Texture2D, InputTexture)
+	SHADER_PARAMETER(FIntVector, OutExtent)
 	SHADER_PARAMETER_RDG_TEXTURE(Texture2D, OutputTexture)
 END_SHADER_PARAMETER_STRUCT()
 
@@ -133,7 +134,7 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 		TextureDesc.Extent.Y = oclHeight;
 		TextureDesc.Format = PF_R8G8B8A8;
 		TextureDesc.Flags = TexCreate_ShaderResource | TexCreate_UAV | TexCreate_RenderTargetable;
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < 2; i++)
 		{
 			ViewData->Names[i] = FString::Format(TEXT("OVST-Convert-{0}"), { FString::FromInt(i) });
 			ViewData->ConvertTexture[i].Texture = GraphBuilder.CreateTexture(TextureDesc, *ViewData->Names[i], ERDGTextureFlags::MultiFrame);
@@ -141,14 +142,14 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 		}
 		ViewData->initialized = true;
 	}
-	int packIndex = GFrameNumber;
-	int ovstIndex = GFrameNumber - 2;
-	int outputIndex = (packIndex % 3) * 2 + 0;
+
+	int outputIndex = 0;
 
 	// input for openvino
 	FRHISamplerState* BilinearClampSampler = TStaticSamplerState<SF_Bilinear, AM_Clamp, AM_Clamp, AM_Clamp>::GetRHI();
+	for(int i = 0; i < 2; i++)
 	{
-		const bool bStyleInputSupportsUAV = (ViewData->ConvertTexture[outputIndex].Texture->Desc.Flags & TexCreate_UAV) == TexCreate_UAV;
+		const bool bStyleInputSupportsUAV = (ViewData->ConvertTexture[outputIndex + i].Texture->Desc.Flags & TexCreate_UAV) == TexCreate_UAV;
 		if (!bStyleInputSupportsUAV)
 		{	// vs-ps
 			FOVSTPS::FParameters* PassParameters = GraphBuilder.AllocParameters<FOVSTPS::FParameters>();
@@ -158,9 +159,9 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 			PassParameters->OVST.ColorSampler = BilinearClampSampler;
 			PassParameters->OVST.OutExtent.X = oclWidth;
 			PassParameters->OVST.OutExtent.Y = oclHeight;
-			PassParameters->RenderTargets[0] = FRenderTargetBinding(ViewData->ConvertTexture[outputIndex].Texture, ERenderTargetLoadAction::ENoAction);
+			PassParameters->RenderTargets[0] = FRenderTargetBinding(ViewData->ConvertTexture[outputIndex + i].Texture, ERenderTargetLoadAction::ENoAction);
 			FScreenPassTextureViewport InputViewport = FScreenPassTextureViewport(PassInputs.SceneColor.Texture);
-			FScreenPassTextureViewport OutputViewport = FScreenPassTextureViewport(ViewData->ConvertTexture[outputIndex].Texture);
+			FScreenPassTextureViewport OutputViewport = FScreenPassTextureViewport(ViewData->ConvertTexture[outputIndex + i].Texture);
 
 			// grab shaders
 			bool useReserve = false;
@@ -186,8 +187,8 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 			PassParameters->OVST.ColorSampler = BilinearClampSampler;
 			PassParameters->OVST.OutExtent.X = oclWidth;
 			PassParameters->OVST.OutExtent.Y = oclHeight;
-			PassParameters->OutputTexture = GraphBuilder.CreateUAV(ViewData->ConvertTexture[outputIndex].Texture);
-			FScreenPassTextureViewport OutputViewport = FScreenPassTextureViewport(ViewData->ConvertTexture[outputIndex].Texture);
+			PassParameters->OutputTexture = GraphBuilder.CreateUAV(ViewData->ConvertTexture[outputIndex + i].Texture);
+			FScreenPassTextureViewport OutputViewport = FScreenPassTextureViewport(ViewData->ConvertTexture[outputIndex + i].Texture);
 
 			// grab shaders
 			bool useReserve = false;
@@ -206,14 +207,13 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 	}
 
 	// openvino pass here
-	if(ovstIndex >= 0 && ViewData->startFrames >= 2)
 	{
-		int index = (ovstIndex % 3) * 2;
+		int index = 0;
 		FScreenPassTextureViewport OutputViewport = FScreenPassTextureViewport(ViewData->ConvertTexture[index + 1].Texture);
 		FParametersOCL* PassParameters = GraphBuilder.AllocParameters<FParametersOCL>();
-		PassParameters->OVST.InputTexture = ViewData->ConvertTexture[index].Texture;
-		PassParameters->OVST.OutExtent.X = OutputViewport.Rect.Width();
-		PassParameters->OVST.OutExtent.Y = OutputViewport.Rect.Height();
+		PassParameters->InputTexture = ViewData->ConvertTexture[index].Texture;
+		PassParameters->OutExtent.X = OutputViewport.Rect.Width();
+		PassParameters->OutExtent.Y = OutputViewport.Rect.Height();
 		PassParameters->OutputTexture = ViewData->ConvertTexture[index + 1].Texture;
 
 #if PLATFORM_WINDOWS
@@ -229,15 +229,18 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 				ERDGPassFlags::Compute | ERDGPassFlags::NeverCull,
 				[PassParameters](FRHICommandList& RHICmdList)
 				{
-#if !TEST_PASS_ROUTE
 					// process opencl here
-					ID3D11Texture2D* inputTex = static_cast<ID3D11Texture2D*>(PassParameters->OVST.InputTexture->GetRHI()->GetTexture2D()->GetNativeResource());
+					ID3D11Texture2D* inputTex = static_cast<ID3D11Texture2D*>(PassParameters->InputTexture->GetRHI()->GetTexture2D()->GetNativeResource());
 					ID3D11Texture2D* outputTex = static_cast<ID3D11Texture2D*>(PassParameters->OutputTexture->GetRHI()->GetTexture2D()->GetNativeResource());
-					int width = PassParameters->OVST.OutExtent.X;
-					int height = PassParameters->OVST.OutExtent.Y;
+					int width = PassParameters->OutExtent.X;
+					int height = PassParameters->OutExtent.Y;
+
+					RHICmdList.BeginUpdateMultiFrameResource(PassParameters->OutputTexture->GetRHI());
+#if !TEST_PASS_ROUTE
 					// call open vino pass here ...
 					OpenVino_Infer_FromDXData(inputTex, outputTex, width, height, 0);
 #endif
+					RHICmdList.EndUpdateMultiFrameResource(PassParameters->OutputTexture->GetRHI());
 				});
 #if !TEST_PASS_ROUTE
 			outputIndex = index + 1;

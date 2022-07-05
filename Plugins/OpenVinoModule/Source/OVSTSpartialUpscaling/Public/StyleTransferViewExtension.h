@@ -21,6 +21,6 @@ public:
 private:
 	OVSTSPATIALUPSCALING_API void OnCreate();
 	bool isIntel;
-	bool starFrames;
+	int starFrames;
 	int32 lastMode;
 };

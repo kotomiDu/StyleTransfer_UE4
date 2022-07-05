@@ -51,8 +51,8 @@ void StyleTransferViewExtension::PreRenderViewFamily_RenderThread(FRHICommandLis
 		{
 			starFrames++;
 		}
-		const StyleTransferSpatialUpscaler* upscaler = static_cast<const StyleTransferSpatialUpscaler*>(InViewFamily.GetSecondarySpatialUpscalerInterface());
-		upscaler->SetStartFrames(starFrames);
+		//const StyleTransferSpatialUpscaler* upscaler = static_cast<const StyleTransferSpatialUpscaler*>(InViewFamily.GetSecondarySpatialUpscalerInterface());
+		//upscaler->SetStartFrames(starFrames);
 	}
 	lastMode = mode;
 }
