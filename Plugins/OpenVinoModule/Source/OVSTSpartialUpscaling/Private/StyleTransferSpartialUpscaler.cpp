@@ -10,7 +10,7 @@
 #include "Windows/HideWindowsPlatformTypes.h"
 #include "ThirdParty\OpenVinoWrapper\OpenVinoWrapper.h"
 
-
+#define TEST_PASS_ROUTE	(0)
 
 DECLARE_GPU_STAT(StyleTransferPass)
 
@@ -135,8 +135,8 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 		TextureDesc.Flags = TexCreate_ShaderResource | TexCreate_UAV | TexCreate_RenderTargetable;
 		for (int i = 0; i < 6; i++)
 		{
-			FString name = FString::Format(TEXT("OVST-Convert-{0}"), { FString::FromInt(i) });
-			ViewData->ConvertTexture[i].Texture = GraphBuilder.CreateTexture(TextureDesc, name.GetCharArray().GetData(), ERDGTextureFlags::MultiFrame);
+			ViewData->Names[i] = FString::Format(TEXT("OVST-Convert-{0}"), { FString::FromInt(i) });
+			ViewData->ConvertTexture[i].Texture = GraphBuilder.CreateTexture(TextureDesc, *ViewData->Names[i], ERDGTextureFlags::MultiFrame);
 			ViewData->ConvertTexture[i].ViewRect = FIntRect(0, 0, oclWidth, oclHeight);
 		}
 		ViewData->initialized = true;
@@ -206,7 +206,7 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 	}
 
 	// openvino pass here
-	if(ovstIndex >= 0)
+	if(ovstIndex >= 0 && ViewData->startFrames >= 2)
 	{
 		int index = (ovstIndex % 3) * 2;
 		FScreenPassTextureViewport OutputViewport = FScreenPassTextureViewport(ViewData->ConvertTexture[index + 1].Texture);
@@ -217,7 +217,11 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 		PassParameters->OutputTexture = ViewData->ConvertTexture[index + 1].Texture;
 
 #if PLATFORM_WINDOWS
+#if TEST_PASS_ROUTE
+		if (RHIName == TEXT("D3D11"))
+#else
 		if (ViewData->isIntel && RHIName == TEXT("D3D11"))
+#endif
 		{
 			GraphBuilder.AddPass(
 				RDG_EVENT_NAME("OpenVinoStyleTransfer"),
@@ -225,6 +229,7 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 				ERDGPassFlags::Compute | ERDGPassFlags::NeverCull,
 				[PassParameters](FRHICommandList& RHICmdList)
 				{
+#if !TEST_PASS_ROUTE
 					// process opencl here
 					ID3D11Texture2D* inputTex = static_cast<ID3D11Texture2D*>(PassParameters->OVST.InputTexture->GetRHI()->GetTexture2D()->GetNativeResource());
 					ID3D11Texture2D* outputTex = static_cast<ID3D11Texture2D*>(PassParameters->OutputTexture->GetRHI()->GetTexture2D()->GetNativeResource());
@@ -232,8 +237,11 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 					int height = PassParameters->OVST.OutExtent.Y;
 					// call open vino pass here ...
 					OpenVino_Infer_FromDXData(inputTex, outputTex, width, height, 0);
+#endif
 				});
+#if !TEST_PASS_ROUTE
 			outputIndex = index + 1;
+#endif
 		}
 #endif
 	}

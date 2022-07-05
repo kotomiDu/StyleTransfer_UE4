@@ -16,6 +16,8 @@ static TAutoConsoleVariable<int32> CVarTransferEnabled(
 
 void StyleTransferViewExtension::OnCreate()
 {
+	starFrames = 0;
+	lastMode = 0;
 	isIntel = false;
 #if PLATFORM_WINDOWS
 	FGPUDriverInfo GPUDriverInfo = FPlatformMisc::GetGPUDriverInfo(GRHIAdapterName);
@@ -36,20 +38,21 @@ void StyleTransferViewExtension::BeginRenderViewFamily(FSceneViewFamily& InViewF
 	}
 }
 
-void StyleTransferViewExtension::PreRenderView_RenderThread(FRHICommandListImmediate& RHICmdList, FSceneView& InView)
+void StyleTransferViewExtension::PreRenderViewFamily_RenderThread(FRHICommandListImmediate& RHICmdList, FSceneViewFamily& InViewFamily)
 {
-	if (CVarTransferEnabled.GetValueOnAnyThread() == 2)
+	int mode = CVarTransferEnabled.GetValueOnAnyThread();
+	if (mode == 2)
 	{
-		// Get device here
-		void* device = RHICmdList.GetNativeDevice();
-		FString RHIName = GDynamicRHI->GetName();
-#if PLATFORM_WINDOWS
-		// Set ocl device
-		if (RHIName == TEXT("D3D11"))
+		if (lastMode != mode)
 		{
-			// Set device here for ocl
-
+			starFrames = 0;
 		}
-#endif
+		else
+		{
+			starFrames++;
+		}
+		const StyleTransferSpatialUpscaler* upscaler = static_cast<const StyleTransferSpatialUpscaler*>(InViewFamily.GetSecondarySpatialUpscalerInterface());
+		upscaler->SetStartFrames(starFrames);
 	}
+	lastMode = mode;
 }
