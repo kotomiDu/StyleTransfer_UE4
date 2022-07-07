@@ -137,7 +137,7 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 		for (int i = 0; i < 2; i++)
 		{
 			ViewData->Names[i] = FString::Format(TEXT("OVST-Convert-{0}"), { FString::FromInt(i) });
-			ViewData->ConvertTexture[i].Texture = GraphBuilder.CreateTexture(TextureDesc, *ViewData->Names[i], ERDGTextureFlags::MultiFrame);
+			ViewData->ConvertTexture[i].Texture = GraphBuilder.CreateTexture(TextureDesc, *ViewData->Names[i]);
 			ViewData->ConvertTexture[i].ViewRect = FIntRect(0, 0, oclWidth, oclHeight);
 		}
 		ViewData->initialized = true;
@@ -229,18 +229,24 @@ FScreenPassTexture StyleTransferSpatialUpscaler::AddPasses(FRDGBuilder& GraphBui
 				ERDGPassFlags::Compute | ERDGPassFlags::NeverCull,
 				[PassParameters](FRHICommandList& RHICmdList)
 				{
+					if (!RHICmdList.IsImmediate())
+					{
+						RHICmdList.Flush();
+					}
+					else
+					{
+						FRHICommandListExecutor::GetImmediateCommandList().ImmediateFlush(EImmediateFlushType::FlushRHIThreadFlushResources);
+					}
+
 					// process opencl here
 					ID3D11Texture2D* inputTex = static_cast<ID3D11Texture2D*>(PassParameters->InputTexture->GetRHI()->GetTexture2D()->GetNativeResource());
 					ID3D11Texture2D* outputTex = static_cast<ID3D11Texture2D*>(PassParameters->OutputTexture->GetRHI()->GetTexture2D()->GetNativeResource());
 					int width = PassParameters->OutExtent.X;
 					int height = PassParameters->OutExtent.Y;
-
-					RHICmdList.BeginUpdateMultiFrameResource(PassParameters->OutputTexture->GetRHI());
 #if !TEST_PASS_ROUTE
 					// call open vino pass here ...
 					OpenVino_Infer_FromDXData(inputTex, outputTex, width, height, 0);
 #endif
-					RHICmdList.EndUpdateMultiFrameResource(PassParameters->OutputTexture->GetRHI());
 				});
 #if !TEST_PASS_ROUTE
 			outputIndex = index + 1;
