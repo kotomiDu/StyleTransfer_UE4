@@ -31,6 +31,11 @@ static TAutoConsoleVariable<int32> CVarTransferHeight(
 	512,
 	TEXT("Set Openvino Style transfer rect height."));
 
+static TAutoConsoleVariable<FString> CVarDevice(
+	TEXT("r.OVST.Device"),
+	"CPU",
+	TEXT("Set device for Openvino Style transfer: CPU, GPU.0, GPU.1"));
+
 /*
  * @brief Tests if file passed exists, and logs error if it doesn't
  * @param filePath to be tested
@@ -53,6 +58,7 @@ UOpenVinoStyleTransfer::UOpenVinoStyleTransfer()
 	: transfer_mode(nullptr)
 	, transfer_width(nullptr)
 	, transfer_height(nullptr)
+	, transfer_device(nullptr)
 	, debug_flag(false)
 	, dialog(nullptr)
 	, window(nullptr)
@@ -65,6 +71,7 @@ UOpenVinoStyleTransfer::UOpenVinoStyleTransfer()
 	transfer_width = IConsoleManager::Get().FindConsoleVariable(TEXT("r.OVST.Width"));
 	transfer_height = IConsoleManager::Get().FindConsoleVariable(TEXT("r.OVST.Height"));
 	transfer_mode = IConsoleManager::Get().FindConsoleVariable(TEXT("r.OVST.Enabled"));
+	transfer_device = IConsoleManager::Get().FindConsoleVariable(TEXT("r.OVST.Device"));
 
 	input_size.X = input_size.Y = 0;
 	last_input_size.X = last_input_size.Y = 0;
@@ -106,6 +113,7 @@ UOpenVinoStyleTransfer::Initialize(
 	}
 
 	mode = 0;
+	device = "CPU";
 
 	tmp_buffer.Reset(0);
 	tmp_buffer.SetNum(0);
@@ -160,7 +168,7 @@ bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height, int inmode)
 
 	if (inmode == 1)
 	{
-		if (!OpenVino_Initialize(TCHAR_TO_ANSI(*xml_file_path), TCHAR_TO_ANSI(*xml_file_path), width, height))
+		if (!OpenVino_Initialize(TCHAR_TO_ANSI(*xml_file_path), TCHAR_TO_ANSI(*xml_file_path), width, height, TCHAR_TO_ANSI(*device)))
 			return false;
 	}
 	else if (inmode == 2)
@@ -216,10 +224,13 @@ bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height, int inmode)
 void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	int newMode = transfer_mode->GetInt();
-	if (newMode != mode)
+	FString newDevice = transfer_device->GetString();
+
+	if (newMode != mode || (newDevice != device && mode == 1))
 	{
 		OnResizeOutput(0, 0, mode);
 		mode = newMode;
+		device = newDevice;
 		if (mode == 1)
 		{
 			last_out_width = transfer_width->GetInt();

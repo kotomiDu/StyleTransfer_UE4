@@ -82,6 +82,8 @@ private:
 	// mode
 	IConsoleVariable* transfer_mode;
 	int32 mode;
+	IConsoleVariable* transfer_device;
+	FString device;
 
 	// output
 	IConsoleVariable* transfer_width;
