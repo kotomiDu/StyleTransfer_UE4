@@ -113,9 +113,6 @@ UOpenVinoStyleTransfer::Initialize(
 	xml_file_path = xmlFilePath;
 	bin_file_path = binFilePath;
 
-	retLog = TEXT("Style transfer has been initialized.");
-	UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer has been initialized!"));
-
 	// bind callback
 	BindBackbufferCallback();
 
@@ -304,7 +301,7 @@ void  UOpenVinoStyleTransfer::BindBackbufferCallback()
 
 		m_OnBackBufferReadyToPresent = FSlateApplication::Get().GetRenderer()->OnBackBufferReadyToPresent().AddUObject(this, &UOpenVinoStyleTransfer::OnBackBufferReady_RenderThread);
 
-		UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer bind back buffer copy callback!"));
+		UE_LOG(LogStyleTransfer, Log, TEXT("Register style transfer bind back buffer copy callback!"));
 	}
 }
 
