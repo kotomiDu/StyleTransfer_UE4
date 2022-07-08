@@ -346,7 +346,8 @@ void OpenVinoData::Initialize_BaseOCL(
 
 	//1) Reading network 
 	ov::Core core;
-	core.set_property(ov::cache_dir("cache"));
+	std::string cachefolder = CreateCacheDir("ovgpu_cache");
+	core.set_property(ov::cache_dir(cachefolder));
 	auto model = core.read_model(modelXmlFilePath);
 
 	ov::preprocess::PrePostProcessor ppp(model);

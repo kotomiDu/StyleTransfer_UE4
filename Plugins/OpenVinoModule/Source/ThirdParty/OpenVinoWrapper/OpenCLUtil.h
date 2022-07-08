@@ -204,3 +204,4 @@
     };
 
     OCLFilterStore* CreateFilterStore(OCLEnv* env, const std::string& oclFile);
+    std::string CreateCacheDir(std::string foldername);

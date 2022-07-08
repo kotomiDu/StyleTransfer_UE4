@@ -3,6 +3,9 @@
 #include <thread>
 #include <iostream>
 #include <fstream>
+#include <shlwapi.h>
+#include<fileapi.h>
+#pragma comment(lib, "shlwapi.lib")
 
 #define MAX_PLATFORMS       32
 #define MAX_STRING_SIZE     1024
@@ -675,6 +678,21 @@
         input.read(&program_source[0], program_source.size());
 
         return std::string(program_source.begin(), program_source.end());
+    }
+    std::string CreateCacheDir(std::string foldername)
+    {
+        BOOL bDir = FALSE;
+        std::string dirpath =  getPathToHandle() + foldername;
+        if (!PathIsDirectory((LPCSTR)dirpath.c_str()))
+        {
+            bDir = CreateDirectoryA((LPCSTR)dirpath.c_str(), NULL);
+        }
+        if (bDir)
+        {
+            std::cout << "successfully create a new folder ";
+    
+        }
+        return dirpath;
     }
 
     OCLFilterStore* CreateFilterStore(OCLEnv* env, const std::string& oclFile) {
