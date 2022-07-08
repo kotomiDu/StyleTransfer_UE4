@@ -148,4 +148,9 @@ extern "C"
 	DLLEXPORT bool OpenVINO_GetCurrentSTsize(
 		int* width,
 		int* height);
+
+	/*
+	* @brief This method is to manually release OpenVinoData instance
+	*/
+	DLLEXPORT bool OpenVino_Release();
 }

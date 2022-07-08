@@ -332,3 +332,26 @@ OpenVINO_GetCurrentSTsize(
 		return false;
 	}
 }
+
+DLLEXPORT
+bool __cdecl
+OpenVino_Release()
+{
+	try
+	{
+		last_error.clear();
+	initializedData = nullptr;
+	}
+	catch (std::exception& ex)
+	{
+		last_error = ex.what();
+
+		return false;
+	}
+	catch (...)
+	{
+		last_error = "OpenVINO Release Failed";
+
+		return false;
+	}
+}
