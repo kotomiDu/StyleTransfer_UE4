@@ -22,6 +22,7 @@ embedded in Materials by Intel or Intel's suppliers or licensors in any way."
 #pragma once
 
 #include <string>
+#include <fstream>
 #include <d3d11.h>
 #include <ie/inference_engine.hpp>
 #include "openvino/openvino.hpp"
@@ -58,9 +59,26 @@ class OpenVinoData
 	ID3D11Device* m_pD3D11Dev;
 	ID3D11Texture2D* m_ovSurfaceRGBA_cpu_copy;
 
+	//performance metric
+	double total_inference_time;
+	double loading_time;
+	int frame_count;
+	std::ofstream logfile_mode1;
+	std::ofstream logfile_mode2;
+
 public:
-	OpenVinoData() = default;
-	virtual ~OpenVinoData() = default;
+	OpenVinoData()
+	{
+		frame_count = 0;
+		total_inference_time = 0.0;
+		logfile_mode1.open("mode1_log.txt",std::ios::binary);
+		logfile_mode2.open("mode2_log.txt", std::ios::binary);
+	};
+	virtual ~OpenVinoData()
+	{
+		logfile_mode1.close();
+		logfile_mode2.close();
+	};
 
 public:
 	/**
