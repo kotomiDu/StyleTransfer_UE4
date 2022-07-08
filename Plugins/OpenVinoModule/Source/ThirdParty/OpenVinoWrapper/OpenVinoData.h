@@ -91,7 +91,8 @@ public:
 		std::string modelXmlFilePath,
 		std::string modelBinFilePath,
 		int inferWidth,
-		int inferHeight);
+		int inferHeight,
+		std::string devicename);
 
 	/**
 	 * @brief Call infer using loaded model files

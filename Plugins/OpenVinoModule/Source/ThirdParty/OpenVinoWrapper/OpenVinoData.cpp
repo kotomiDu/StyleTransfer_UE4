@@ -56,7 +56,8 @@ OpenVinoData::Initialize(
 	string modelXmlFilePath,
 	string modelBinFilePath,
 	int inferWidth,
-	int inferHeight)
+	int inferHeight,
+	string devicename)
 {
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
@@ -99,7 +100,7 @@ OpenVinoData::Initialize(
 
 	// --------------------------- 3. Loading model to the plugin ------------------------------------------
 	clog << "4. Loading model..." << endl;
-	executable_network = core.LoadNetwork(network, "GPU");//, cnnConfig.execNetworkConfig);
+	executable_network = core.LoadNetwork(network, devicename);//, cnnConfig.execNetworkConfig);
 
 	clog << "Intialized." << endl;
 

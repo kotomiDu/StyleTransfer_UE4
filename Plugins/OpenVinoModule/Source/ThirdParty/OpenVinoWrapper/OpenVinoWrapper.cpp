@@ -54,7 +54,8 @@ OpenVino_Initialize(
 	LPCSTR modelXmlFilePath,
 	LPCSTR modelBinFilePath,
 	int inferWidth,
-	int inferHeight)
+	int inferHeight,
+	LPCSTR devicename)
 {
 	try
 	{
@@ -67,7 +68,7 @@ OpenVino_Initialize(
 		// OpenVinoData structure does actual processing:
 		auto ptr = std::make_unique<OpenVinoData>();
 		// Forward initialization to OpenVinoData:
-		ptr->Initialize(modelXmlFilePath, modelBinFilePath, inferWidth, inferHeight);
+		ptr->Initialize(modelXmlFilePath, modelBinFilePath, inferWidth, inferHeight, devicename);
 		// Save it for use in later calls:
 		initializedData = std::move(ptr);
 

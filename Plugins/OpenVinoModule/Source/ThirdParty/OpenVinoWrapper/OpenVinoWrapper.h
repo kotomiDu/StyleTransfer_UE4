@@ -56,7 +56,8 @@ extern "C"
 		const char* modelXmlFilePath,
 		const char* modelBinFilePath,
 		int inferWidth,
-		int inferHeight);
+		int inferHeight,
+		const char* devicename);
 
 	/*
 	 * @brief This method is used to infer results, based on loaded model (see "OpenVino_Initialize")
