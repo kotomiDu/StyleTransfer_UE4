@@ -46,8 +46,8 @@ public class OpenVinoWrapper : ModuleRules
                 "OpenVinoWrapper");
 
 
-            CopyToBinariesAddRuntimeDependancies(Path.Combine(openVinoDir, "bin"));
-            CopyToBinariesAddRuntimeDependancies(openVinoDir, "bin");
+            CopyToBinariesAddRuntimeDependancies(Path.Combine(openVinoDir, "bin")); // copy to project binary folder
+            CopyToBinariesAddRuntimeDependancies(openVinoDir, "bin");              // copy to plugin binary folder
         }
         else
         {
