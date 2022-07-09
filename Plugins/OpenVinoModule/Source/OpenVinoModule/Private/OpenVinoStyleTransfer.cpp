@@ -56,9 +56,9 @@ static UOpenVinoStyleTransfer* openVinoTransfer = nullptr;
 // Sets default values for this component's properties
 UOpenVinoStyleTransfer::UOpenVinoStyleTransfer()
 	: transfer_mode(nullptr)
+	, transfer_device(nullptr)
 	, transfer_width(nullptr)
 	, transfer_height(nullptr)
-	, transfer_device(nullptr)
 	, debug_flag(false)
 	, dialog(nullptr)
 	, window(nullptr)
@@ -113,7 +113,13 @@ UOpenVinoStyleTransfer::Initialize(
 	}
 
 	mode = 0;
+	transfer_mode->Set(mode, ECVF_SetByConsole);
 	device = "CPU";
+	transfer_device->Set(TEXT("CPU"), ECVF_SetByConsole);
+
+	state = IDLE;
+	is_openvino_creating = false;
+	is_openvino_releasing = false;
 
 	tmp_buffer.Reset(0);
 	tmp_buffer.SetNum(0);
@@ -137,7 +143,7 @@ void UOpenVinoStyleTransfer::Release()
 	UnBindBackbufferCallback();
 
 	// release
-	OnResizeOutput(0, 0, transfer_mode->GetInt());
+	ReleaseWithMode(transfer_mode->GetInt(), true);
 }
 
 UTexture2D* UOpenVinoStyleTransfer::GetTransferedTexture()
@@ -145,10 +151,10 @@ UTexture2D* UOpenVinoStyleTransfer::GetTransferedTexture()
 	return out_tex;
 }
 
-bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height, int inmode)
+void UOpenVinoStyleTransfer::ReleaseWithMode(int inmode, bool force)
 {
 	if (inmode == 0)
-		return true;
+		return;
 
 	if (window != nullptr)
 	{
@@ -163,13 +169,60 @@ bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height, int inmode)
 		out_tex = nullptr;
 	}
 
-	if (width == 0 || height == 0)
-		return true;
+	if (inmode == 1 || force)
+	{
+		OpenVino_Release();
+	}
+	else
+	{
+		FString RHIName = GDynamicRHI->GetName();
+#if PLATFORM_WINDOWS
+		// Set ocl device
+		if (is_intel && RHIName == TEXT("D3D11"))
+		{
+			is_openvino_releasing = true;
+			ENQUEUE_RENDER_COMMAND(ReleaseOCLOpenVino)(
+				[this](FRHICommandListImmediate& RHICmdList)
+				{
+					OpenVino_Release();
+					this->is_openvino_releasing = false;
+				});
+		}
+#endif
+	}
+}
+
+void UOpenVinoStyleTransfer::CreateWithMode(int width, int height, int inmode, FString& indevice)
+{
+	if (inmode == 0)
+		return;
 
 	if (inmode == 1)
 	{
-		if (!OpenVino_Initialize(TCHAR_TO_ANSI(*xml_file_path), TCHAR_TO_ANSI(*xml_file_path), width, height, TCHAR_TO_ANSI(*device)))
-			return false;
+		if (!OpenVino_Initialize(TCHAR_TO_ANSI(*xml_file_path), TCHAR_TO_ANSI(*xml_file_path), width, height, TCHAR_TO_ANSI(*indevice)))
+		{
+			UE_LOG(LogStyleTransfer, Log, TEXT("OpenVino initialize failed, width = %d, height = %d,  mode = %d, device = %s!"), width, height, inmode, TCHAR_TO_ANSI(*indevice));
+			return;
+		}
+
+		// initialize buffer size
+		size_t size = width * height;
+		size_t buffer_size = size * 3;
+		buffer.Reset(buffer_size);
+		buffer.SetNum(buffer_size);
+		rgba_buffer.Reset(size);
+		rgba_buffer.SetNum(size);
+
+		UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer buffer initialized!"));
+
+		// new window
+		dialog = SStyleTransferResultDialog::ShowWindow(width, height, window);
+		window->SetOnWindowClosed(FOnWindowClosed::CreateLambda([this](const TSharedRef<SWindow>& Window)
+			{
+				this->ClearWindow();
+			}));
+
+		UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer window created!"));
 	}
 	else if (inmode == 2)
 	{
@@ -178,129 +231,125 @@ bool UOpenVinoStyleTransfer::OnResizeOutput(int width, int height, int inmode)
 		// Set ocl device
 		if (is_intel && RHIName == TEXT("D3D11"))
 		{
+			is_openvino_creating = true;
 			ENQUEUE_RENDER_COMMAND(CreateOCLOpenVino)(
 				[this, width, height](FRHICommandListImmediate& RHICmdList)
 				{
 					OpenVino_Initialize_BaseOCL(TCHAR_TO_ANSI(*xml_file_path), TCHAR_TO_ANSI(*xml_file_path), RHICmdList.GetNativeDevice(), width, height);
+					is_openvino_creating = false;
 				});
-			return true;
 		}
-		else
-		{
-			return false;
-		}
-#else
-		return false;
 #endif
 	}
 
 	UE_LOG(LogStyleTransfer, Log, TEXT("OpenVino initialize successful, width = %d, height = %d!"), width, height);
-
-	if (inmode == 2)
-		return true;
-
-	// initialize buffer size
-	size_t size = width * height;
-	size_t buffer_size = size * 3;
-	buffer.Reset(buffer_size);
-	buffer.SetNum(buffer_size);
-	rgba_buffer.Reset(size);
-	rgba_buffer.SetNum(size);
-
-	UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer buffer initialized!"));
-
-	// new window
-	dialog = SStyleTransferResultDialog::ShowWindow(width, height, window);
-	window->SetOnWindowClosed(FOnWindowClosed::CreateLambda([this](const TSharedRef<SWindow>& Window)
-		{
-			this->ClearWindow();
-		}));
-
-	UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer window created!"));
-
-	return true;
 }
 
-void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UOpenVinoStyleTransfer::UpdateWidthHeight(int inmode)
 {
-	int newMode = transfer_mode->GetInt();
-	FString newDevice = transfer_device->GetString();
-
-	if (newMode != mode || (newDevice != device && mode == 1))
+	if (inmode == 1)
 	{
-		OnResizeOutput(0, 0, mode);
-		mode = newMode;
-		device = newDevice;
-		if (mode == 1)
-		{
-			last_out_width = transfer_width->GetInt();
-			last_out_height = transfer_height->GetInt();
-		}
-		else if (mode == 2)
-		{
-			UGameViewportClient* gameViewport = GetWorld()->GetGameViewport();
-			if (gameViewport != nullptr)
-			{
-				FSceneViewport* vp = gameViewport->GetGameViewport();
-				OpenVino_GetSuitableSTsize(vp->GetSize().X, vp->GetSize().Y, &last_out_width, &last_out_height);
-			}
-			else
-			{
-				last_out_width = 0;
-				last_out_height = 0;
-			}
-		}
-		OnResizeOutput(last_out_width, last_out_height, mode);
+		last_out_width = transfer_width->GetInt();
+		last_out_height = transfer_height->GetInt();
 	}
-
-	if (mode == 0)
-		return;
-	
-	if (mode == 2)
+	else if (inmode == 2)
 	{
 		UGameViewportClient* gameViewport = GetWorld()->GetGameViewport();
 		if (gameViewport != nullptr)
 		{
 			FSceneViewport* vp = gameViewport->GetGameViewport();
-			int newWidth, newHeight;
-			OpenVino_GetSuitableSTsize(vp->GetSize().X, vp->GetSize().Y, &newWidth, &newHeight);
-			if (last_out_width != newWidth || last_out_height != newHeight)
+			OpenVino_GetSuitableSTsize(vp->GetSize().X, vp->GetSize().Y, &last_out_width, &last_out_height);
+		}
+		else
+		{
+			last_out_width = 0;
+			last_out_height = 0;
+		}
+	}
+}
+
+void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	switch (state)
+	{
+	case IDLE:
+		new_mode = transfer_mode->GetInt();
+		new_device = transfer_device->GetString();
+
+		if (new_mode != mode || (new_device != device && mode == 1))
+		{
+			ReleaseWithMode(mode);
+			if (is_openvino_releasing)
 			{
-				last_out_width = newWidth;
-				last_out_height = newHeight;
-				OnResizeOutput(last_out_width, last_out_height, mode);
+				state = RELEASING;
+				break;
+			}
+			mode = new_mode;
+			device = new_device;
+			UpdateWidthHeight(mode);
+			CreateWithMode(last_out_width, last_out_height, mode, device);
+			if (is_openvino_creating)
+			{
+				state = CREATING;
+				break;
+			}
+			break;
+		}
+
+		// only cpu mode use buffer copy
+		if (mode == 1)
+		{
+			// reset input tmp process buffer	
+			if (input_size.X != 0 && input_size.Y != 0 && input_size != last_input_size)
+			{
+				UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer resize input from %d*%d to %d*%d!"), last_input_size.X, last_input_size.Y, input_size.X, input_size.Y);
+
+				size_t buffer_size = input_size.X * input_size.Y * 3;
+				tmp_buffer.Reset(buffer_size);
+				tmp_buffer.SetNum(buffer_size);
+			}
+			last_input_size = input_size;
+
+			// output buffer change
+			if (transfer_width->GetInt() != last_out_width || transfer_height->GetInt() != last_out_height)
+			{
+				UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer resize output from %d*%d to %d*%d!"), last_out_width, last_out_height, transfer_width->GetInt(), transfer_height->GetInt());
+
+				last_out_width = transfer_width->GetInt();
+				last_out_height = transfer_height->GetInt();
+				ReleaseWithMode(mode);
+				CreateWithMode(last_out_width, last_out_height, mode, device);
+			}
+
+			// begin transfer from captured data to texture via cpu pass
+			if (tmp_buffer.Num() > 0 && StyleTransferToTexture(this, fb_data, input_size.X, input_size.Y))
+			{
+				// show texture in dialog
+				dialog->UpdateTexture(out_tex);
 			}
 		}
-		return;
-	}
-
-	// only cpu mode use buffer copy
-	// reset input tmp process buffer
-	if (input_size.X != 0 && input_size.Y != 0 && input_size != last_input_size)
-	{
-		UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer resize input from %d*%d to %d*%d!"), last_input_size.X, last_input_size.Y, input_size.X, input_size.Y);
-
-		size_t buffer_size = input_size.X * input_size.Y * 3;
-		tmp_buffer.Reset(buffer_size);
-		tmp_buffer.SetNum(buffer_size);
-	}
-	last_input_size = input_size;
-
-	// output buffer change
-	if (transfer_width->GetInt() != last_out_width || transfer_height->GetInt() != last_out_height)
-	{
-		UE_LOG(LogStyleTransfer, Log, TEXT("Style transfer resize output from %d*%d to %d*%d!"), last_out_width, last_out_height, transfer_width->GetInt(), transfer_height->GetInt());
-
-		last_out_width = transfer_width->GetInt();
-		last_out_height = transfer_height->GetInt();
-		OnResizeOutput(last_out_width, last_out_height, mode);
-	}
-
-	// begin transfer from captured data to texture via cpu pass
-	if (tmp_buffer.Num() > 0 && StyleTransferToTexture(this, fb_data, input_size.X, input_size.Y))
-	{
-		// show texture in dialog
-		dialog->UpdateTexture(out_tex);
+		break;
+	case RELEASING:
+		if (!is_openvino_releasing)
+		{
+			mode = new_mode;
+			device = new_device;
+			UpdateWidthHeight(mode);
+			CreateWithMode(last_out_width, last_out_height, mode, device);
+			if (is_openvino_creating)
+			{
+				state = CREATING;
+				break;
+			}
+		}
+		break;
+	case CREATING:
+		if (!is_openvino_creating)
+		{
+			state = IDLE;
+			break;
+		}
+		break;
 	}
 }
 

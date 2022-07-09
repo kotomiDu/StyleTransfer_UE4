@@ -8,6 +8,10 @@
 #include "Windows/WindowsPlatformMisc.h"
 #endif
 
+#if WITH_EDITOR
+#include "Editor.h"
+#endif
+
 static TAutoConsoleVariable<int32> CVarTransferEnabled(
 	TEXT("r.OVST.Enabled"),
 	0,
@@ -16,8 +20,6 @@ static TAutoConsoleVariable<int32> CVarTransferEnabled(
 
 void StyleTransferViewExtension::OnCreate()
 {
-	starFrames = 0;
-	lastMode = 0;
 	isIntel = false;
 #if PLATFORM_WINDOWS
 	FGPUDriverInfo GPUDriverInfo = FPlatformMisc::GetGPUDriverInfo(GRHIAdapterName);
@@ -30,29 +32,17 @@ void StyleTransferViewExtension::OnCreate()
 
 void StyleTransferViewExtension::BeginRenderViewFamily(FSceneViewFamily& InViewFamily)
 {
-	if (InViewFamily.GetFeatureLevel() >= ERHIFeatureLevel::SM5 && CVarTransferEnabled.GetValueOnAnyThread() == 2)
+	bool isRunning = true;
+#if WITH_EDITOR
+	if (GIsEditor && !GEditor->PlayWorld && !GIsPlayInEditorWorld)
+	{
+		isRunning = false;
+	}
+#endif
+	if (isRunning && InViewFamily.GetFeatureLevel() >= ERHIFeatureLevel::SM5 && CVarTransferEnabled.GetValueOnAnyThread() == 2)
 	{
 		FStyleTransferSpatialUpscalerData* viewData = new FStyleTransferSpatialUpscalerData();
 		viewData->isIntel = isIntel;
 		InViewFamily.SetSecondarySpatialUpscalerInterface(new StyleTransferSpatialUpscaler(TSharedPtr<FStyleTransferSpatialUpscalerData>(viewData)));
 	}
-}
-
-void StyleTransferViewExtension::PreRenderViewFamily_RenderThread(FRHICommandListImmediate& RHICmdList, FSceneViewFamily& InViewFamily)
-{
-	int mode = CVarTransferEnabled.GetValueOnAnyThread();
-	if (mode == 2)
-	{
-		if (lastMode != mode)
-		{
-			starFrames = 0;
-		}
-		else
-		{
-			starFrames++;
-		}
-		//const StyleTransferSpatialUpscaler* upscaler = static_cast<const StyleTransferSpatialUpscaler*>(InViewFamily.GetSecondarySpatialUpscalerInterface());
-		//upscaler->SetStartFrames(starFrames);
-	}
-	lastMode = mode;
 }

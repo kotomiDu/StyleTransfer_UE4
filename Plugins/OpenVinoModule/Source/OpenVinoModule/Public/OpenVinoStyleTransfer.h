@@ -68,7 +68,9 @@ private:
 	void UnBindBackbufferCallback();
 
 	// on resize output width/height
-	bool OnResizeOutput(int width, int height, int inmode);
+	void UpdateWidthHeight(int inmode);
+	void ReleaseWithMode(int inmode, bool force = false);
+	void CreateWithMode(int width, int height, int inmode, FString& indevice);
 
 	/**
 	 * @brief Returns last error from OpenVino, logging it first to UE's log system
@@ -84,6 +86,10 @@ private:
 	int32 mode;
 	IConsoleVariable* transfer_device;
 	FString device;
+
+	// save the mode for delay switch
+	int new_mode;
+	FString new_device;
 
 	// output
 	IConsoleVariable* transfer_width;
@@ -112,6 +118,18 @@ private:
 	FString bin_file_path;
 
 	bool is_intel;
+
+	enum STATE
+	{
+		IDLE = 0,
+		RELEASING,
+		CREATING,
+	};
+
+	STATE state;
+	bool is_openvino_releasing;
+	bool is_openvino_creating;
+
 public:
 	FDelegateHandle m_OnBackBufferReadyToPresent;
 

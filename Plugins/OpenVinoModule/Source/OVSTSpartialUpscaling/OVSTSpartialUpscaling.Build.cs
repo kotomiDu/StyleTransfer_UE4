@@ -48,7 +48,7 @@ public class OVSTSpartialUpscaling : ModuleRules
 				"Slate",
 				"SlateCore",
 				"Renderer",
-
+				"UnrealEd",
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);
