@@ -113,9 +113,7 @@ UOpenVinoStyleTransfer::Initialize(
 	}
 
 	mode = 0;
-	transfer_mode->Set(mode, ECVF_SetByConsole);
 	device = "CPU";
-	transfer_device->Set(TEXT("CPU"), ECVF_SetByConsole);
 
 	state = IDLE;
 	is_openvino_creating = false;
