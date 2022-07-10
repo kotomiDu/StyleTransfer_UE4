@@ -63,21 +63,21 @@ class OpenVinoData
 	double total_inference_time;
 	double loading_time;
 	int frame_count;
-	std::ofstream logfile_mode1;
-	std::ofstream logfile_mode2;
+	std::ofstream logfile_mode;
+	std::string gpuCacheFolder;
+	std::string logFolder;
 
 public:
 	OpenVinoData()
 	{
 		frame_count = 0;
 		total_inference_time = 0.0;
-		logfile_mode1.open("mode1_log.txt",std::ios::binary);
-		logfile_mode2.open("mode2_log.txt", std::ios::binary);
+		gpuCacheFolder = CreateCacheDir("ovgpu_cache");
+		logFolder = CreateCacheDir("log");
 	};
 	virtual ~OpenVinoData()
 	{
-		logfile_mode1.close();
-		logfile_mode2.close();
+		logfile_mode.close();
 	};
 
 public:
