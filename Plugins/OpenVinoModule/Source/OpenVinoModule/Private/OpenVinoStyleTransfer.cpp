@@ -339,6 +339,7 @@ void UOpenVinoStyleTransfer::TickComponent(float DeltaTime, enum ELevelTick Tick
 				state = CREATING;
 				break;
 			}
+			state = IDLE;
 		}
 		break;
 	case CREATING:
