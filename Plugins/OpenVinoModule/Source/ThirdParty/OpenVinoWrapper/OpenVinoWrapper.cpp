@@ -39,6 +39,7 @@ static unique_ptr<OpenVinoData> initializedData;
 // This variable holds the model width and height
 static int modelWidth;
 static int modelHeight;
+static bool isOCLInitialized = false;
 
 /*
  * @brief This method is called to make initialization of the OpenVino library and load the
@@ -222,6 +223,7 @@ OpenVino_Initialize_BaseOCL(
 		ptr->Initialize_BaseOCL(modelXmlFilePath,inferWidth, inferHeight);
 		// Save it for use in later calls:
 		initializedData = std::move(ptr);
+		isOCLInitialized = true;
 
 		return true;
 	}
@@ -249,6 +251,9 @@ OpenVino_Infer_FromDXData(
 	int surfaceHeight, 
 	bool debug_flag)
 {
+	if (!isOCLInitialized)
+		return false;
+
 	try
 	{
 		if (!initializedData)
@@ -341,7 +346,8 @@ OpenVino_Release()
 	try
 	{
 		last_error.clear();
-	initializedData = nullptr;
+		isOCLInitialized = false;
+		initializedData = nullptr;
 	}
 	catch (std::exception& ex)
 	{
