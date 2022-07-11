@@ -48,7 +48,6 @@ public class OVSTSpartialUpscaling : ModuleRules
 				"Slate",
 				"SlateCore",
 				"Renderer",
-				"UnrealEd",
 				// ... add private dependencies that you statically link with here ...	
 			}
 		);
@@ -60,5 +59,12 @@ public class OVSTSpartialUpscaling : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 		);
+
+		if (Target.bBuildEditor == true)
+		{
+			//@TODO: Needed for the triangulation code used for sprites (but only in editor mode)
+			//@TOOD: Try to move the code dependent on the triangulation code to the editor-only module
+			PrivateDependencyModuleNames.Add("UnrealEd");
+		}
 	}
 }
