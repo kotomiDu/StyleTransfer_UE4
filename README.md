@@ -13,41 +13,28 @@ realtime style transfer in unreal engine
 
 * Choose `folder\for\Release project`, waiting for the compiling result
 
-* Go to `folder\for\Release project`, run `StyleTransfer.exe -WINDOWED -ResX=512 -ResY=512 -ExecCmds="r.OVST.Width 512, r.OVST.Height 512"`
+* Go to `folder\for\Release project`, run `StyleTransfer.exe -WINDOWED -ResX=1920 -ResY=1080 -ExecCmds="r.OVST.Width 1920, r.OVST.Height 1080"`
   ![Result](doc/Result_manga.png)
 
 * Press `~` to change mode, for example, `r.OVST.Enabled 2`.  
 
   ## Performance
 
-### CPU inference
+### model_v5 inference
 
-|         | FPS  | 12900K CPU Usage | 3080 GPU Usage |
-| ------- | ---- | ---------------- | -------------- |
-| 512*512 | 9   | 42%              | 32%            |
-| 224*224 | 40   | 32%              | 42%            |
-
-|         | FPS  | 11900K CPU Usage | DG2 128EU      |
-| ------- | ---- | ---------------- | -------------- |
-| 512*512 | 17   | 55%              | 7%             |
-| 224*224 | 105  | 52%              | 27%            |
-
-### iGPU inference
-
-|         | FPS  | 12900K CPU Usage | UHDGraphcis770 |3080 GPU Usage |
-| ------- | ---- | ---------------- | -------------- |-------------- |
-| 512*512 | 11   | 12%              | 90%            |27%            |
-| 224*224 | 40   | 20%              | 62%            |39%            |
+|          | FPS  | Inference time | Loading time | CPU GPU copy |
+|----------|------|----------------|--------------|--------------|
+| No style | 200  | 0              | 0            | 0            |
+| GPU_OCL  | 9    | 105ms          | 3.8s         | 0            |
+| GPU1     | 6    | 150ms          | 2.8s         | 17ms         |
+| GPU0     | 1.89 | 502ms          | 3.1s         | 0            |
 
 
-### DG2 GPU inference
-
-|         | FPS  | 11900K CPU Usage  |DG2 128EU      |
-| ------- | ---- | ----------------  |-------------- |
-| 512*512 | 82   | 29%               |20%            |
-| 224*224 | 148  | 25%               |23%            |
+* GPU 0: Intel(R) UHD Graphics
+* GPU 1: Intel(R) Arc(TM) A730M Graphics
 
 ## To-Do list
+  - [ ] Change model to int8 precision for 30 fps target
   - [ ] GPU管线和openvino 推理 时间统计，加到屏幕统计信息 
   - [x] 用[openvino D3D api](https://docs.openvino.ai/2021.4/classInferenceEngine_1_1gpu_1_1D3DBufferBlob.html) 拿到DirectX的数据做推理
   - [x] 把UE渲染数据通过`ID3D11Device`的方式拿到
