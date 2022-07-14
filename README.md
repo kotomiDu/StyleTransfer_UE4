@@ -34,13 +34,13 @@ realtime style transfer in unreal engine
 |          | FPS  | Inference time | Loading time | copy buffer from CPU to GPU |
 |----------|------|----------------|--------------|--------------|
 | No style | 200  | 0              | 0            | 0            |
-| GPU_OCL  | 30    | 28ms          | 2.2s         | 0            |
+| GPU_OCL  | 31    | 28ms          | 2.2s         | 0            |
 | GPU1     | 10   | 76ms          | 1.7s         | 19ms         |
 | GPU0     | 5 | 156ms          | 1.1s         | 23ms           |
 
 * GPU 0: Intel(R) UHD Graphics
 * GPU 1: Intel(R) Arc(TM) A730M Graphics
-* There are two times of CPU/GPU copy during inference for GPU.1/GPU.0 mode
+* There are two times of CPU/GPU copy during inference in GPU.1/GPU.0 mode
 
 ## To-Do list
   - [x] Change model to int8 precision for 30 fps target
