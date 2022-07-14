@@ -19,16 +19,16 @@ __global uchar* pR = pG + channelSz;
 
 
 
-__kernel void convertRGBintToARGB(__write_only image2d_t outARGB, __global uchar * srcptr,  int dst_cols, int channelSz)
+__kernel void convertRGBintToARGB(__write_only image2d_t outARGB, __global float * srcptr,  int dst_cols, int channelSz)
 {
 int i = get_global_id(0); // range [0, width]
 int j = get_global_id(1); // range [0, height]
 
 
 // Note: RGBP -> RRGGBB
-__global uchar* pB = srcptr + dst_cols * j + i;
-__global uchar* pG = pB + channelSz;
-__global uchar* pR = pG + channelSz;
+__global float* pB = srcptr + dst_cols * j + i;
+__global float* pG = pB + channelSz;
+__global float* pR = pG + channelSz;
 
 // Note: RRGGBB -> RRGGBB
 //__global uchar* pR = srcptr + dst_cols * j * 3+ i*3; 
@@ -37,9 +37,9 @@ __global uchar* pR = pG + channelSz;
 
 uint4 rgba;
 
-rgba.z = *pR;
-rgba.y = *pG;
-rgba.x = *pB;
+rgba.z = convert_int((*pR+1)/2 * 255);
+rgba.y = convert_int((*pG+1)/2 * 255);
+rgba.x = convert_int((*pB+1)/2 * 255);
 //rgba.w = 0;
 rgba.w = 1;  //for png output
 

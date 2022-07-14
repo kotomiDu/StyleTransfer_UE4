@@ -268,30 +268,22 @@ OpenVinoData::Infer(
 	float* output_data_pointer = blobMapped.as<float*>();
 	std::vector<float> output_data(output_data_pointer, output_data_pointer + length);
 
-	//output of new model is in range (0,255)
-	std::vector<uint8_t> convert_output_data;
-	convert_output_data.reserve(output_data.size());
-	for (const auto& f : output_data) {
-		convert_output_data.push_back(uint8_t(f));
-	}
-
-	//align result dimension
-	//output_data  = transpose4d(output_data, ieSizeToVector(output_shape), { 0, 3, 1, 2 });
 	int rows = output_shape[2];
 	int cols = output_shape[3];
-	if (convert_output_data.size() == rows * cols * 3) // check that the rows and cols match the size of your vector
-	{
-		//copy vector to mat
-		cv::Mat channelR(rows, cols, CV_8UC1, convert_output_data.data());
-		cv::Mat channelG(rows, cols, CV_8UC1, convert_output_data.data() + cols * rows);
-		cv::Mat channelB(rows, cols, CV_8UC1, convert_output_data.data() + 2 * cols * rows);
+	if (output_data.size() == rows * cols * 3){
+		cv::Mat channelR(rows, cols, CV_32FC1, output_data.data());
+		cv::Mat channelG(rows, cols, CV_32FC1, output_data.data() + cols * rows);
+		cv::Mat channelB(rows, cols, CV_32FC1, output_data.data() + 2 * cols * rows);
 		// RGB2BGR
-		std::vector<cv::Mat> channels{ channelB, channelG, channelR };
+		std::vector<cv::Mat> channels{ channelB, channelG, channelR};
 
 		// Create the output matrix
 		merge(channels, outputImage);
 	}
-
+	//postprocessing
+	// normolize  (-1,1) to (0,255)
+	cv::normalize(outputImage, outputImage, 0, 255, cv::NORM_MINMAX);
+	outputImage.convertTo(outputImage, CV_8U);
 	if(debug_flag)
 	{
 		cv::imwrite("output.png", outputImage);
@@ -392,7 +384,7 @@ void OpenVinoData::Initialize_BaseOCL(
 
 	// 4)Setting output info
 	ppp.output().tensor()
-		.set_element_type(ov::element::u8);
+		.set_element_type(ov::element::f32);
 
 	model = ppp.build();
 
@@ -410,9 +402,9 @@ void OpenVinoData::Initialize_BaseOCL(
 
 	// 8)Create input and output GPU Blobs
 	_inputBuffer = cl::Buffer(_oclCtx, CL_MEM_READ_WRITE, input_shape[1] * input_shape[2] * input_shape[3] * sizeof(uint8_t), NULL, NULL);
-	_outputBuffer = cl::Buffer(_oclCtx, CL_MEM_READ_WRITE, input_shape[1] * input_shape[2] * input_shape[3] * sizeof(uint8_t), NULL, NULL);
+	_outputBuffer = cl::Buffer(_oclCtx, CL_MEM_READ_WRITE, input_shape[1] * input_shape[2] * input_shape[3] * sizeof(float), NULL, NULL);
 	auto shared_in_blob = remote_context.create_tensor(ov::element::u8, input_shape, _inputBuffer);
-	auto shared_output_blob = remote_context.create_tensor(ov::element::u8, input_shape, _outputBuffer);  //style transfer output has the same shape with input
+	auto shared_output_blob = remote_context.create_tensor(ov::element::f32, input_shape, _outputBuffer);  //style transfer output has the same shape with input
 	infer_request.set_input_tensor(shared_in_blob);
 	infer_request.set_output_tensor(shared_output_blob);
 
