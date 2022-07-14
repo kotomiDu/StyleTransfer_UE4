@@ -22,19 +22,28 @@ realtime style transfer in unreal engine
 
 ### model_v5 inference
 
-|          | FPS  | Inference time | Loading time | CPU GPU copy |
+|          | FPS  | Inference time | Loading time | copy buffer from CPU to GPU|
 |----------|------|----------------|--------------|--------------|
 | No style | 200  | 0              | 0            | 0            |
 | GPU_OCL  | 9    | 105ms          | 3.8s         | 0            |
 | GPU1     | 6    | 150ms          | 2.8s         | 17ms         |
-| GPU0     | 1.89 | 502ms          | 3.1s         | 0            |
+| GPU0     | 1.89 | 502ms          | 3.1s         | 18ms            |
 
+### model_v9_int8 inference
+
+|          | FPS  | Inference time | Loading time | copy buffer from CPU to GPU |
+|----------|------|----------------|--------------|--------------|
+| No style | 200  | 0              | 0            | 0            |
+| GPU_OCL  | 30    | 28ms          | 2.2s         | 0            |
+| GPU1     | 10   | 76ms          | 1.7s         | 19ms         |
+| GPU0     | 5 | 156ms          | 1.1s         | 23ms           |
 
 * GPU 0: Intel(R) UHD Graphics
 * GPU 1: Intel(R) Arc(TM) A730M Graphics
+* There are two times of CPU/GPU copy during inference for GPU.1/GPU.0 mode
 
 ## To-Do list
-  - [ ] Change model to int8 precision for 30 fps target
+  - [x] Change model to int8 precision for 30 fps target
   - [ ] GPU管线和openvino 推理 时间统计，加到屏幕统计信息 
   - [x] 用[openvino D3D api](https://docs.openvino.ai/2021.4/classInferenceEngine_1_1gpu_1_1D3DBufferBlob.html) 拿到DirectX的数据做推理
   - [x] 把UE渲染数据通过`ID3D11Device`的方式拿到
