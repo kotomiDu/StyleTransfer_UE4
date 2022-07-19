@@ -22,30 +22,29 @@ realtime style transfer in unreal engine
 
 ### model_v5 inference
 
-|          | FPS  | Inference time | Loading time | copy buffer from CPU to GPU|
-|----------|------|----------------|--------------|--------------|
-| No style | 200  | 0              | 0            | 0            |
-| GPU_OCL  | 9    | 105ms          | 3.8s         | 0            |
-| GPU1     | 6    | 150ms          | 2.8s         | 17ms         |
-| GPU0     | 1.89 | 502ms          | 3.1s         | 18ms            |
+|          | FPS  | Inference time |  copy buffer from CPU to GPU| Loading time |
+|----------|------|----------------|---------------|               -------------|
+| No style | 200  | 0              |  0            |               0            |
+| GPU_OCL  | 9    | 105ms          |  0            |               3.8s         |
+| GPU1     | 6    | 150ms          |  17ms         |               2.8s         |
+| GPU0     | 1.89 | 502ms          |  18ms            |            3.1s         |
 
 ### model_v9 inference
-
-|          | FPS  | Inference time | Loading time | copy buffer from CPU to GPU |
-|----------|------|----------------|--------------|--------------|
-| No style | 200  | 0              | 0            | 0            |
-| GPU_OCL  | 24   | 38ms          | 3.2s         | 0            |
-| GPU1     | 9.6   | 84ms          | 2.4s         | 19ms         |
-| GPU0     | 3.4 | 256ms          | 2.0s         | 23ms           |
+|          | FPS  | Inference time |  copy buffer from CPU to GPU | Loading time |
+|----------|------|----------------|---------------|                -------------|
+| No style | 200  | 0              |  0            |                0            |
+| GPU_OCL  | 24   | 38ms           |  0            |                3.2s         |
+| GPU1     | 9.6   | 84ms          |  19ms         |                2.4s         |
+| GPU0     | 3.4 | 256ms           |  23ms           |              2.0s         |
 
 ### model_v9_int8 inference
 
-|          | FPS  | Inference time | Loading time | copy buffer from CPU to GPU |
-|----------|------|----------------|--------------|--------------|
-| No style | 200  | 0              | 0            | 0            |
-| GPU_OCL  | 31    | 28ms          | 2.2s         | 0            |
-| GPU1     | 10   | 76ms          | 1.7s         | 19ms         |
-| GPU0     | 5 | 156ms          | 1.1s         | 23ms           |
+|          | FPS  | Inference time |  copy buffer from CPU to GPU |   Loading time |
+|----------|------|----------------|---------------|                  -------------|
+| No style | 200  | 0              |  0            |                  0            |
+| GPU_OCL  | 31    | 28ms          |  0            |                  2.2s         |
+| GPU1     | 10   | 76ms           |  19ms         |                  1.7s         |
+| GPU0     | 5 | 156ms             |  23ms           |                1.1s         |
 
 * GPU 0: Intel(R) UHD Graphics
 * GPU 1: Intel(R) Arc(TM) A730M Graphics
