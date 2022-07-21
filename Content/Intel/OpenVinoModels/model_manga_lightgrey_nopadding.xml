@@ -16,7 +16,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="1" name="Constant_3607_compressed" type="Const" version="opset1">
+		<layer id="1" name="Constant_3596_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="0" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -27,7 +27,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="2" name="Constant_3607" type="Convert" version="opset1">
+		<layer id="2" name="Constant_3596" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -49,7 +49,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="3" name="Constant_3608_compressed" type="Const" version="opset1">
+		<layer id="3" name="Constant_3597_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="2" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -60,7 +60,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="4" name="Constant_3608" type="Convert" version="opset1">
+		<layer id="4" name="Constant_3597" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -82,7 +82,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="5" name="Constant_3609_compressed" type="Const" version="opset1">
+		<layer id="5" name="Constant_3598_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="0" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -93,7 +93,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="6" name="Constant_3609" type="Convert" version="opset1">
+		<layer id="6" name="Constant_3598" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -115,7 +115,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="7" name="Constant_3610_compressed" type="Const" version="opset1">
+		<layer id="7" name="Constant_3599_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="2" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -126,7 +126,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="8" name="Constant_3610" type="Convert" version="opset1">
+		<layer id="8" name="Constant_3599" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -194,7 +194,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="10" name="Gather_3606" type="Const" version="opset1">
+		<layer id="10" name="nncf_module.encoder.layers.0.layers.0.layers.1.weight" type="Const" version="opset1">
 			<data element_type="i8" shape="32, 3, 3, 3" offset="4" size="864"/>
 			<output>
 				<port id="0" precision="I8">
@@ -205,10 +205,10 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="11" name="Convert_3804" type="Convert" version="opset1">
+		<layer id="11" name="Convert_3792" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
-				<attribute name="fused_names" version="0" value="166, 167, 168"/>
+				<attribute name="fused_names" version="0" value="166, 167, 168, nncf_module.encoder.layers.0.layers.0.layers.1.weight"/>
 			</rt_info>
 			<input>
 				<port id="0" precision="I8">
@@ -227,7 +227,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="12" name="Constant_3741_compressed" type="Const" version="opset1">
+		<layer id="12" name="Constant_3729_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="32, 1, 1, 1" offset="868" size="64"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -238,7 +238,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="13" name="Constant_3741" type="Convert" version="opset1">
+		<layer id="13" name="Constant_3729" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -263,7 +263,7 @@
 		<layer id="14" name="168" type="Multiply" version="opset1">
 			<data auto_broadcast="numpy"/>
 			<rt_info>
-				<attribute name="fused_names" version="0" value="166, 167, 168"/>
+				<attribute name="fused_names" version="0" value="166, 167, 168, nncf_module.encoder.layers.0.layers.0.layers.1.weight"/>
 			</rt_info>
 			<input>
 				<port id="0" precision="FP32">
@@ -398,7 +398,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="20" name="Constant_3611_compressed" type="Const" version="opset1">
+		<layer id="20" name="Constant_3600_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -409,7 +409,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="21" name="Constant_3611" type="Convert" version="opset1">
+		<layer id="21" name="Constant_3600" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -431,7 +431,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="22" name="Constant_3612_compressed" type="Const" version="opset1">
+		<layer id="22" name="Constant_3601_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="998" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -442,7 +442,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="23" name="Constant_3612" type="Convert" version="opset1">
+		<layer id="23" name="Constant_3601" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -464,7 +464,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="24" name="Constant_3613_compressed" type="Const" version="opset1">
+		<layer id="24" name="Constant_3602_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -475,7 +475,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="25" name="Constant_3613" type="Convert" version="opset1">
+		<layer id="25" name="Constant_3602" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -497,7 +497,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="26" name="Constant_3614_compressed" type="Const" version="opset1">
+		<layer id="26" name="Constant_3603_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="998" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -508,7 +508,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="27" name="Constant_3614" type="Convert" version="opset1">
+		<layer id="27" name="Constant_3603" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -587,7 +587,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="30" name="Convert_3925" type="Convert" version="opset1">
+		<layer id="30" name="Convert_3913" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="fused_names" version="0" value="198, 199, 200, nncf_module.encoder.layers.1.layers.0.layers.1.weight"/>
@@ -609,7 +609,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="31" name="Constant_3862_compressed" type="Const" version="opset1">
+		<layer id="31" name="Constant_3850_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="64, 1, 1, 1" offset="19432" size="128"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -620,7 +620,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="32" name="Constant_3862" type="Convert" version="opset1">
+		<layer id="32" name="Constant_3850" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -780,7 +780,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="39" name="Constant_3615_compressed" type="Const" version="opset1">
+		<layer id="39" name="Constant_3604_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -791,7 +791,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="40" name="Constant_3615" type="Convert" version="opset1">
+		<layer id="40" name="Constant_3604" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -813,7 +813,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="41" name="Constant_3616_compressed" type="Const" version="opset1">
+		<layer id="41" name="Constant_3605_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="19688" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -824,7 +824,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="42" name="Constant_3616" type="Convert" version="opset1">
+		<layer id="42" name="Constant_3605" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -846,7 +846,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="43" name="Constant_3617_compressed" type="Const" version="opset1">
+		<layer id="43" name="Constant_3606_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -857,7 +857,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="44" name="Constant_3617" type="Convert" version="opset1">
+		<layer id="44" name="Constant_3606" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -879,7 +879,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="45" name="Constant_3618_compressed" type="Const" version="opset1">
+		<layer id="45" name="Constant_3607_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="19688" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -890,7 +890,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="46" name="Constant_3618" type="Convert" version="opset1">
+		<layer id="46" name="Constant_3607" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -969,7 +969,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="49" name="Convert_4046" type="Convert" version="opset1">
+		<layer id="49" name="Convert_4034" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="fused_names" version="0" value="230, 231, 232, nncf_module.encoder.layers.2.layers.0.layers.1.weight"/>
@@ -991,7 +991,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="50" name="Constant_3983_compressed" type="Const" version="opset1">
+		<layer id="50" name="Constant_3971_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="128, 1, 1, 1" offset="93418" size="256"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1002,7 +1002,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="51" name="Constant_3983" type="Convert" version="opset1">
+		<layer id="51" name="Constant_3971" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -1162,7 +1162,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="58" name="Constant_3619_compressed" type="Const" version="opset1">
+		<layer id="58" name="Constant_3608_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1173,7 +1173,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="59" name="Constant_3619" type="Convert" version="opset1">
+		<layer id="59" name="Constant_3608" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -1195,7 +1195,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="60" name="Constant_3620_compressed" type="Const" version="opset1">
+		<layer id="60" name="Constant_3609_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="93930" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1206,7 +1206,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="61" name="Constant_3620" type="Convert" version="opset1">
+		<layer id="61" name="Constant_3609" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -1228,7 +1228,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="62" name="Constant_3621_compressed" type="Const" version="opset1">
+		<layer id="62" name="Constant_3610_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1239,7 +1239,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="63" name="Constant_3621" type="Convert" version="opset1">
+		<layer id="63" name="Constant_3610" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -1261,7 +1261,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="64" name="Constant_3622_compressed" type="Const" version="opset1">
+		<layer id="64" name="Constant_3611_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="93930" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1272,7 +1272,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="65" name="Constant_3622" type="Convert" version="opset1">
+		<layer id="65" name="Constant_3611" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -1351,7 +1351,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="68" name="Convert_4167" type="Convert" version="opset1">
+		<layer id="68" name="Convert_4155" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="fused_names" version="0" value="262, 263, 264, nncf_module.encoder.layers.3.branch.0.layers.0.layers.1.weight"/>
@@ -1373,7 +1373,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="69" name="Constant_4104_compressed" type="Const" version="opset1">
+		<layer id="69" name="Constant_4092_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="128, 1, 1, 1" offset="241388" size="256"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1384,7 +1384,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="70" name="Constant_4104" type="Convert" version="opset1">
+		<layer id="70" name="Constant_4092" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -1544,7 +1544,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="77" name="Constant_3623_compressed" type="Const" version="opset1">
+		<layer id="77" name="Constant_3612_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1555,7 +1555,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="78" name="Constant_3623" type="Convert" version="opset1">
+		<layer id="78" name="Constant_3612" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -1577,7 +1577,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="79" name="Constant_3624_compressed" type="Const" version="opset1">
+		<layer id="79" name="Constant_3613_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="241900" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1588,7 +1588,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="80" name="Constant_3624" type="Convert" version="opset1">
+		<layer id="80" name="Constant_3613" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -1610,7 +1610,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="81" name="Constant_3625_compressed" type="Const" version="opset1">
+		<layer id="81" name="Constant_3614_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1621,7 +1621,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="82" name="Constant_3625" type="Convert" version="opset1">
+		<layer id="82" name="Constant_3614" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -1643,7 +1643,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="83" name="Constant_3626_compressed" type="Const" version="opset1">
+		<layer id="83" name="Constant_3615_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="241900" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1654,7 +1654,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="84" name="Constant_3626" type="Convert" version="opset1">
+		<layer id="84" name="Constant_3615" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -1771,7 +1771,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="88" name="Constant_3627_compressed" type="Const" version="opset1">
+		<layer id="88" name="Constant_3616_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1782,7 +1782,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="89" name="Constant_3627" type="Convert" version="opset1">
+		<layer id="89" name="Constant_3616" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -1804,7 +1804,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="90" name="Constant_3628_compressed" type="Const" version="opset1">
+		<layer id="90" name="Constant_3617_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="241902" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1815,7 +1815,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="91" name="Constant_3628" type="Convert" version="opset1">
+		<layer id="91" name="Constant_3617" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -1837,7 +1837,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="92" name="Constant_3629_compressed" type="Const" version="opset1">
+		<layer id="92" name="Constant_3618_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1848,7 +1848,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="93" name="Constant_3629" type="Convert" version="opset1">
+		<layer id="93" name="Constant_3618" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -1870,7 +1870,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="94" name="Constant_3630_compressed" type="Const" version="opset1">
+		<layer id="94" name="Constant_3619_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="241902" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1881,7 +1881,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="95" name="Constant_3630" type="Convert" version="opset1">
+		<layer id="95" name="Constant_3619" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -1960,7 +1960,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="98" name="Convert_4288" type="Convert" version="opset1">
+		<layer id="98" name="Convert_4276" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="fused_names" version="0" value="299, 300, 301, nncf_module.encoder.layers.4.branch.0.layers.0.layers.1.weight"/>
@@ -1982,7 +1982,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="99" name="Constant_4225_compressed" type="Const" version="opset1">
+		<layer id="99" name="Constant_4213_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="128, 1, 1, 1" offset="389360" size="256"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -1993,7 +1993,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="100" name="Constant_4225" type="Convert" version="opset1">
+		<layer id="100" name="Constant_4213" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -2153,7 +2153,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="107" name="Constant_3631_compressed" type="Const" version="opset1">
+		<layer id="107" name="Constant_3620_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -2164,7 +2164,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="108" name="Constant_3631" type="Convert" version="opset1">
+		<layer id="108" name="Constant_3620" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -2186,7 +2186,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="109" name="Constant_3632_compressed" type="Const" version="opset1">
+		<layer id="109" name="Constant_3621_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="389872" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -2197,7 +2197,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="110" name="Constant_3632" type="Convert" version="opset1">
+		<layer id="110" name="Constant_3621" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -2219,7 +2219,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="111" name="Constant_3633_compressed" type="Const" version="opset1">
+		<layer id="111" name="Constant_3622_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -2230,7 +2230,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="112" name="Constant_3633" type="Convert" version="opset1">
+		<layer id="112" name="Constant_3622" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -2252,7 +2252,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="113" name="Constant_3634_compressed" type="Const" version="opset1">
+		<layer id="113" name="Constant_3623_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="389872" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -2263,7 +2263,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="114" name="Constant_3634" type="Convert" version="opset1">
+		<layer id="114" name="Constant_3623" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -2380,7 +2380,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="118" name="Constant_3635_compressed" type="Const" version="opset1">
+		<layer id="118" name="Constant_3624_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -2391,7 +2391,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="119" name="Constant_3635" type="Convert" version="opset1">
+		<layer id="119" name="Constant_3624" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -2413,7 +2413,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="120" name="Constant_3636_compressed" type="Const" version="opset1">
+		<layer id="120" name="Constant_3625_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="389874" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -2424,7 +2424,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="121" name="Constant_3636" type="Convert" version="opset1">
+		<layer id="121" name="Constant_3625" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -2446,7 +2446,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="122" name="Constant_3637_compressed" type="Const" version="opset1">
+		<layer id="122" name="Constant_3626_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -2457,7 +2457,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="123" name="Constant_3637" type="Convert" version="opset1">
+		<layer id="123" name="Constant_3626" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -2479,7 +2479,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="124" name="Constant_3638_compressed" type="Const" version="opset1">
+		<layer id="124" name="Constant_3627_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="389874" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -2490,7 +2490,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="125" name="Constant_3638" type="Convert" version="opset1">
+		<layer id="125" name="Constant_3627" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -2569,7 +2569,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="128" name="Convert_4409" type="Convert" version="opset1">
+		<layer id="128" name="Convert_4397" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="fused_names" version="0" value="336, 337, 338, nncf_module.encoder.layers.5.branch.0.layers.0.layers.1.weight"/>
@@ -2591,7 +2591,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="129" name="Constant_4346_compressed" type="Const" version="opset1">
+		<layer id="129" name="Constant_4334_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="128, 1, 1, 1" offset="537332" size="256"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -2602,7 +2602,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="130" name="Constant_4346" type="Convert" version="opset1">
+		<layer id="130" name="Constant_4334" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -2762,7 +2762,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="137" name="Constant_3639_compressed" type="Const" version="opset1">
+		<layer id="137" name="Constant_3628_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -2773,7 +2773,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="138" name="Constant_3639" type="Convert" version="opset1">
+		<layer id="138" name="Constant_3628" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -2795,7 +2795,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="139" name="Constant_3640_compressed" type="Const" version="opset1">
+		<layer id="139" name="Constant_3629_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="537844" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -2806,7 +2806,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="140" name="Constant_3640" type="Convert" version="opset1">
+		<layer id="140" name="Constant_3629" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -2828,7 +2828,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="141" name="Constant_3641_compressed" type="Const" version="opset1">
+		<layer id="141" name="Constant_3630_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -2839,7 +2839,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="142" name="Constant_3641" type="Convert" version="opset1">
+		<layer id="142" name="Constant_3630" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -2861,7 +2861,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="143" name="Constant_3642_compressed" type="Const" version="opset1">
+		<layer id="143" name="Constant_3631_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="537844" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -2872,7 +2872,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="144" name="Constant_3642" type="Convert" version="opset1">
+		<layer id="144" name="Constant_3631" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -2989,7 +2989,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="148" name="Constant_3643_compressed" type="Const" version="opset1">
+		<layer id="148" name="Constant_3632_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3000,7 +3000,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="149" name="Constant_3643" type="Convert" version="opset1">
+		<layer id="149" name="Constant_3632" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -3022,7 +3022,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="150" name="Constant_3644_compressed" type="Const" version="opset1">
+		<layer id="150" name="Constant_3633_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="537846" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3033,7 +3033,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="151" name="Constant_3644" type="Convert" version="opset1">
+		<layer id="151" name="Constant_3633" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -3055,7 +3055,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="152" name="Constant_3645_compressed" type="Const" version="opset1">
+		<layer id="152" name="Constant_3634_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3066,7 +3066,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="153" name="Constant_3645" type="Convert" version="opset1">
+		<layer id="153" name="Constant_3634" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -3088,7 +3088,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="154" name="Constant_3646_compressed" type="Const" version="opset1">
+		<layer id="154" name="Constant_3635_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="537846" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3099,7 +3099,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="155" name="Constant_3646" type="Convert" version="opset1">
+		<layer id="155" name="Constant_3635" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -3178,7 +3178,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="158" name="Convert_4530" type="Convert" version="opset1">
+		<layer id="158" name="Convert_4518" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="fused_names" version="0" value="373, 374, 375, nncf_module.encoder.layers.6.branch.0.layers.0.layers.1.weight"/>
@@ -3200,7 +3200,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="159" name="Constant_4467_compressed" type="Const" version="opset1">
+		<layer id="159" name="Constant_4455_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="128, 1, 1, 1" offset="685304" size="256"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3211,7 +3211,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="160" name="Constant_4467" type="Convert" version="opset1">
+		<layer id="160" name="Constant_4455" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -3371,7 +3371,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="167" name="Constant_3647_compressed" type="Const" version="opset1">
+		<layer id="167" name="Constant_3636_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3382,7 +3382,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="168" name="Constant_3647" type="Convert" version="opset1">
+		<layer id="168" name="Constant_3636" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -3404,7 +3404,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="169" name="Constant_3648_compressed" type="Const" version="opset1">
+		<layer id="169" name="Constant_3637_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="685816" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3415,7 +3415,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="170" name="Constant_3648" type="Convert" version="opset1">
+		<layer id="170" name="Constant_3637" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -3437,7 +3437,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="171" name="Constant_3649_compressed" type="Const" version="opset1">
+		<layer id="171" name="Constant_3638_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3448,7 +3448,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="172" name="Constant_3649" type="Convert" version="opset1">
+		<layer id="172" name="Constant_3638" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -3470,7 +3470,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="173" name="Constant_3650_compressed" type="Const" version="opset1">
+		<layer id="173" name="Constant_3639_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="685816" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3481,7 +3481,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="174" name="Constant_3650" type="Convert" version="opset1">
+		<layer id="174" name="Constant_3639" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -3598,7 +3598,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="178" name="Constant_3651_compressed" type="Const" version="opset1">
+		<layer id="178" name="Constant_3640_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3609,7 +3609,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="179" name="Constant_3651" type="Convert" version="opset1">
+		<layer id="179" name="Constant_3640" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -3631,7 +3631,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="180" name="Constant_3652_compressed" type="Const" version="opset1">
+		<layer id="180" name="Constant_3641_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="685818" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3642,7 +3642,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="181" name="Constant_3652" type="Convert" version="opset1">
+		<layer id="181" name="Constant_3641" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -3664,7 +3664,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="182" name="Constant_3653_compressed" type="Const" version="opset1">
+		<layer id="182" name="Constant_3642_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3675,7 +3675,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="183" name="Constant_3653" type="Convert" version="opset1">
+		<layer id="183" name="Constant_3642" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -3697,7 +3697,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="184" name="Constant_3654_compressed" type="Const" version="opset1">
+		<layer id="184" name="Constant_3643_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="685818" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3708,7 +3708,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="185" name="Constant_3654" type="Convert" version="opset1">
+		<layer id="185" name="Constant_3643" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -3787,7 +3787,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="188" name="Convert_4651" type="Convert" version="opset1">
+		<layer id="188" name="Convert_4639" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="fused_names" version="0" value="410, 411, 412, nncf_module.decoder.layers.0.layers.0.layers.1.weight"/>
@@ -3809,7 +3809,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="189" name="Constant_4588_compressed" type="Const" version="opset1">
+		<layer id="189" name="Constant_4576_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="256, 1, 1, 1" offset="980732" size="512"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3820,7 +3820,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="190" name="Constant_4588" type="Convert" version="opset1">
+		<layer id="190" name="Constant_4576" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -3980,7 +3980,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="197" name="Constant_3655_compressed" type="Const" version="opset1">
+		<layer id="197" name="Constant_3644_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -3991,7 +3991,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="198" name="Constant_3655" type="Convert" version="opset1">
+		<layer id="198" name="Constant_3644" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4013,7 +4013,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="199" name="Constant_3656_compressed" type="Const" version="opset1">
+		<layer id="199" name="Constant_3645_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="981756" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4024,7 +4024,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="200" name="Constant_3656" type="Convert" version="opset1">
+		<layer id="200" name="Constant_3645" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4046,7 +4046,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="201" name="Constant_3657_compressed" type="Const" version="opset1">
+		<layer id="201" name="Constant_3646_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4057,7 +4057,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="202" name="Constant_3657" type="Convert" version="opset1">
+		<layer id="202" name="Constant_3646" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4079,7 +4079,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="203" name="Constant_3658_compressed" type="Const" version="opset1">
+		<layer id="203" name="Constant_3647_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="981756" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4090,7 +4090,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="204" name="Constant_3658" type="Convert" version="opset1">
+		<layer id="204" name="Constant_3647" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4180,7 +4180,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="207" name="Constant_3659_compressed" type="Const" version="opset1">
+		<layer id="207" name="Constant_3648_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4191,7 +4191,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="208" name="Constant_3659" type="Convert" version="opset1">
+		<layer id="208" name="Constant_3648" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4213,7 +4213,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="209" name="Constant_3660_compressed" type="Const" version="opset1">
+		<layer id="209" name="Constant_3649_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="981756" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4224,7 +4224,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="210" name="Constant_3660" type="Convert" version="opset1">
+		<layer id="210" name="Constant_3649" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4246,7 +4246,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="211" name="Constant_3661_compressed" type="Const" version="opset1">
+		<layer id="211" name="Constant_3650_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4257,7 +4257,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="212" name="Constant_3661" type="Convert" version="opset1">
+		<layer id="212" name="Constant_3650" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4279,7 +4279,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="213" name="Constant_3662_compressed" type="Const" version="opset1">
+		<layer id="213" name="Constant_3651_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="981756" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4290,7 +4290,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="214" name="Constant_3662" type="Convert" version="opset1">
+		<layer id="214" name="Constant_3651" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4369,7 +4369,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="217" name="Convert_4772" type="Convert" version="opset1">
+		<layer id="217" name="Convert_4760" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="fused_names" version="0" value="446, 447, 448, nncf_module.decoder.layers.2.layers.0.layers.1.weight"/>
@@ -4391,7 +4391,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="218" name="Constant_4709_compressed" type="Const" version="opset1">
+		<layer id="218" name="Constant_4697_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="128, 1, 1, 1" offset="1055486" size="256"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4402,7 +4402,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="219" name="Constant_4709" type="Convert" version="opset1">
+		<layer id="219" name="Constant_4697" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4562,7 +4562,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="226" name="Constant_3663_compressed" type="Const" version="opset1">
+		<layer id="226" name="Constant_3652_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4573,7 +4573,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="227" name="Constant_3663" type="Convert" version="opset1">
+		<layer id="227" name="Constant_3652" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4595,7 +4595,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="228" name="Constant_3664_compressed" type="Const" version="opset1">
+		<layer id="228" name="Constant_3653_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="1055998" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4606,7 +4606,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="229" name="Constant_3664" type="Convert" version="opset1">
+		<layer id="229" name="Constant_3653" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4628,7 +4628,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="230" name="Constant_3665_compressed" type="Const" version="opset1">
+		<layer id="230" name="Constant_3654_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4639,7 +4639,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="231" name="Constant_3665" type="Convert" version="opset1">
+		<layer id="231" name="Constant_3654" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4661,7 +4661,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="232" name="Constant_3666_compressed" type="Const" version="opset1">
+		<layer id="232" name="Constant_3655_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="1055998" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4672,7 +4672,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="233" name="Constant_3666" type="Convert" version="opset1">
+		<layer id="233" name="Constant_3655" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4762,7 +4762,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="236" name="Constant_3667_compressed" type="Const" version="opset1">
+		<layer id="236" name="Constant_3656_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4773,7 +4773,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="237" name="Constant_3667" type="Convert" version="opset1">
+		<layer id="237" name="Constant_3656" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4795,7 +4795,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="238" name="Constant_3668_compressed" type="Const" version="opset1">
+		<layer id="238" name="Constant_3657_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="1055998" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4806,7 +4806,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="239" name="Constant_3668" type="Convert" version="opset1">
+		<layer id="239" name="Constant_3657" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4828,7 +4828,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="240" name="Constant_3669_compressed" type="Const" version="opset1">
+		<layer id="240" name="Constant_3658_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="996" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4839,7 +4839,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="241" name="Constant_3669" type="Convert" version="opset1">
+		<layer id="241" name="Constant_3658" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4861,7 +4861,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="242" name="Constant_3670_compressed" type="Const" version="opset1">
+		<layer id="242" name="Constant_3659_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="1055998" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4872,7 +4872,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="243" name="Constant_3670" type="Convert" version="opset1">
+		<layer id="243" name="Constant_3659" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -4951,7 +4951,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="246" name="Convert_4941" type="Convert" version="opset1">
+		<layer id="246" name="Convert_4929" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="fused_names" version="0" value="482, 483, 484, nncf_module.decoder.layers.4.layers.0.layers.1.weight"/>
@@ -4973,7 +4973,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="247" name="Constant_4848_compressed" type="Const" version="opset1">
+		<layer id="247" name="Constant_4836_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="3, 1, 1, 1" offset="1056864" size="6"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -4984,7 +4984,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="248" name="Constant_4848" type="Convert" version="opset1">
+		<layer id="248" name="Constant_4836" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -5123,7 +5123,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="254" name="Constant_3671_compressed" type="Const" version="opset1">
+		<layer id="254" name="Constant_3660_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="1056876" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -5134,7 +5134,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="255" name="Constant_3671" type="Convert" version="opset1">
+		<layer id="255" name="Constant_3660" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -5156,7 +5156,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="256" name="Constant_3672_compressed" type="Const" version="opset1">
+		<layer id="256" name="Constant_3661_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="1056878" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -5167,7 +5167,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="257" name="Constant_3672" type="Convert" version="opset1">
+		<layer id="257" name="Constant_3661" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -5189,7 +5189,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="258" name="Constant_3673_compressed" type="Const" version="opset1">
+		<layer id="258" name="Constant_3662_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="1056876" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -5200,7 +5200,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="259" name="Constant_3673" type="Convert" version="opset1">
+		<layer id="259" name="Constant_3662" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -5222,7 +5222,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="260" name="Constant_3674_compressed" type="Const" version="opset1">
+		<layer id="260" name="Constant_3663_compressed" type="Const" version="opset1">
 			<data element_type="f16" shape="1, 1, 1, 1" offset="1056878" size="2"/>
 			<output>
 				<port id="0" precision="FP16">
@@ -5233,7 +5233,7 @@
 				</port>
 			</output>
 		</layer>
-		<layer id="261" name="Constant_3674" type="Convert" version="opset1">
+		<layer id="261" name="Constant_3663" type="Convert" version="opset1">
 			<data destination_type="f32"/>
 			<rt_info>
 				<attribute name="decompression" version="0"/>
@@ -5625,9 +5625,8 @@
 			<framework value="onnx"/>
 			<freeze_placeholder_with_value value="{}"/>
 			<generate_deprecated_IR_V7 value="False"/>
-			<input_model value="DIR\model_composition_v9_int8.onnx"/>
+			<input_model value="DIR\model_lightgrey_v9_int8.onnx"/>
 			<input_model_is_text value="False"/>
-			<input_shape value="[1,3,720,1280]"/>
 			<k value="DIR\CustomLayersMapping.xml"/>
 			<keep_shape_ops value="True"/>
 			<layout value="()"/>
@@ -5637,14 +5636,13 @@
 			<log_level value="ERROR"/>
 			<mean_scale_values value="{}"/>
 			<mean_values value="()"/>
-			<model_name value="model_composition_v9_int8"/>
+			<model_name value="model_lightgrey_v9_int8"/>
 			<output_dir value="DIR"/>
 			<placeholder_data_types value="{}"/>
-			<placeholder_shapes value="(1, 3, 720, 1280)"/>
 			<progress value="False"/>
 			<remove_memory value="False"/>
 			<remove_output_softmax value="False"/>
-			<reverse_input_channels value="True"/>
+			<reverse_input_channels value="False"/>
 			<save_params_from_nd value="False"/>
 			<scale_values value="()"/>
 			<silent value="False"/>
@@ -5655,7 +5653,7 @@
 			<transform value=""/>
 			<use_legacy_frontend value="False"/>
 			<use_new_frontend value="False"/>
-			<unset unset_cli_parameters="batch, counts, disable_fusing, disable_gfusing, finegrain_fusing, input, input_checkpoint, input_meta_graph, input_proto, input_symbol, mean_file, mean_file_offsets, move_to_preprocess, nd_prefix_name, output, pretrained_model_name, saved_model_dir, saved_model_tags, scale, tensorboard_logdir, tensorflow_custom_layer_libraries, tensorflow_custom_operations_config_update, tensorflow_object_detection_api_pipeline_config, tensorflow_use_custom_operations_config, transformations_config"/>
+			<unset unset_cli_parameters="batch, counts, disable_fusing, disable_gfusing, finegrain_fusing, input, input_checkpoint, input_meta_graph, input_proto, input_shape, input_symbol, mean_file, mean_file_offsets, move_to_preprocess, nd_prefix_name, output, placeholder_shapes, pretrained_model_name, saved_model_dir, saved_model_tags, scale, tensorboard_logdir, tensorflow_custom_layer_libraries, tensorflow_custom_operations_config_update, tensorflow_object_detection_api_pipeline_config, tensorflow_use_custom_operations_config, transformations_config"/>
 		</cli_parameters>
 	</meta_data>
 </net>

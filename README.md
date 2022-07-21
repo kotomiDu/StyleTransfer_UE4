@@ -14,9 +14,10 @@ realtime style transfer in unreal engine
 * Choose `folder\for\Release project`, waiting for the compiling result
 
 * Go to `folder\for\Release project`, run `StyleTransfer.exe -WINDOWED -ResX=1920 -ResY=1080 -ExecCmds="r.OVST.Width 1920, r.OVST.Height 1080"`
-  ![Result](doc/Result_manga.png)
 
 * Press `~` to change mode, for example, `r.OVST.Enabled 2`.  
+  ![Result mode1](doc/result_mode1.png)
+  ![Result mode2](doc/result_mode2.png)
 
   ## Performance
 
