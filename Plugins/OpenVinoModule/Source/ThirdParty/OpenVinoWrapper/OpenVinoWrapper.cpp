@@ -50,7 +50,7 @@ static bool isOCLInitialized = false;
  * @return true if call is successfull or false if not
  */
 DLLEXPORT
-bool __cdecl 
+bool __cdecl
 OpenVino_Initialize(
 	LPCSTR modelXmlFilePath,
 	LPCSTR modelBinFilePath,
@@ -104,7 +104,7 @@ OpenVino_Initialize(
 DLLEXPORT
 bool __cdecl
 OpenVino_Infer_FromTexture(
-	unsigned char* input, int inwidth, int inheight,  unsigned char* out, bool debug_flag)
+	unsigned char* input, int inwidth, int inheight, unsigned char* out, bool debug_flag)
 {
 	try
 	{
@@ -114,7 +114,7 @@ OpenVino_Infer_FromTexture(
 		/*if (filePath == nullptr)
 			throw std::invalid_argument("File path passed was null");*/
 
-		// Actual Infer call passed to OpenVinoData
+			// Actual Infer call passed to OpenVinoData
 		initializedData->Infer(input, inwidth, inheight, out, debug_flag);
 
 		return true;
@@ -212,15 +212,15 @@ OpenVino_Initialize_BaseOCL(
 
 		last_error.clear();
 		ID3D11Device* dxDevice = (ID3D11Device*)d3dDevice;
-		
+
 
 		// OpenVinoData structure does actual processing:
 		auto ptr = std::make_unique<OpenVinoData>();
 		//Create opencl context
 		ptr->Create_OCLCtx(dxDevice);
-		
+
 		// Forward initialization to OpenVinoData:
-		ptr->Initialize_BaseOCL(modelXmlFilePath,inferWidth, inferHeight);
+		ptr->Initialize_BaseOCL(modelXmlFilePath, inferWidth, inferHeight);
 		// Save it for use in later calls:
 		initializedData = std::move(ptr);
 		isOCLInitialized = true;
@@ -248,7 +248,7 @@ OpenVino_Infer_FromDXData(
 	void* input_surface,
 	void* output_surface,
 	int surfaceWidth,
-	int surfaceHeight, 
+	int surfaceHeight,
 	bool debug_flag)
 {
 	if (!isOCLInitialized)
@@ -262,7 +262,7 @@ OpenVino_Infer_FromDXData(
 		ID3D11Texture2D* input_dxdata = (ID3D11Texture2D*)input_surface;
 		ID3D11Texture2D* output_dxdata = (ID3D11Texture2D*)output_surface;
 		// Actual Infer call passed to OpenVinoData
-		initializedData->Infer(input_dxdata, output_dxdata, surfaceWidth,surfaceHeight,debug_flag);
+		initializedData->Infer(input_dxdata, output_dxdata, surfaceWidth, surfaceHeight, debug_flag);
 
 		return true;
 	}
@@ -310,7 +310,7 @@ OpenVino_GetSuitableSTsize(
 		last_error = "Cannot get sutitable size";
 
 		return false;
-	}	
+	}
 }
 
 DLLEXPORT

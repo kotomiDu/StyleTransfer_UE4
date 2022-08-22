@@ -14,8 +14,8 @@ include_directories(${PROJECT_BINARY_DIR}/../ocl/clhpp_headers/include)
 
 link_directories(${LIB_FOLDER})
 LINK_DIRECTORIES(${PROJECT_BINARY_DIR}/../opencv/lib)
-#LINK_DIRECTORIES(${PROJECT_BINARY_DIR}/../openvino/lib/intel64/lib_debug)
-LINK_DIRECTORIES(${PROJECT_BINARY_DIR}/../openvino/lib/intel64/lib_release)
+LINK_DIRECTORIES(${PROJECT_BINARY_DIR}/../openvino/lib/intel64/lib_debug)
+#LINK_DIRECTORIES(${PROJECT_BINARY_DIR}/../openvino/lib/intel64/lib_release)
 
 
 
@@ -29,33 +29,33 @@ endif()
 set_target_properties(${TARGET_NAME} PROPERTIES "CMAKE_CXX_FLAGS" "${CMAKE_CXX_FLAGS} -fPIE" COMPILE_PDB_NAME ${TARGET_NAME})
 
 #TARGET_LINK_LIBRARIES(${TARGET_NAME} opencv_imgproc454d.lib opencv_core454d.lib opencv_imgcodecs454d.lib opencv_video454d.lib opencv_videoio454d.lib)
-#TARGET_LINK_LIBRARIES(${TARGET_NAME} openvino_ir_frontendd.lib openvinod.lib OpenCL.lib)
+TARGET_LINK_LIBRARIES(${TARGET_NAME} openvino_ir_frontendd.lib openvinod.lib OpenCL.lib)
 
-TARGET_LINK_LIBRARIES(${TARGET_NAME} opencv_imgproc454.lib opencv_core454.lib opencv_imgcodecs454.lib)
-TARGET_LINK_LIBRARIES(${TARGET_NAME} openvino_ir_frontend.lib openvino.lib OpenCL.lib)
+#TARGET_LINK_LIBRARIES(${TARGET_NAME} opencv_imgproc454.lib opencv_core454.lib opencv_imgcodecs454.lib)
+#TARGET_LINK_LIBRARIES(${TARGET_NAME} openvino_ir_frontend.lib openvino.lib OpenCL.lib)
 
 
 # # Copy dll to target folder
-add_custom_command(
-        TARGET ${PROJECT_NAME}  POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-                ${PROJECT_BINARY_DIR}/../opencv/bin/dll_release
+#add_custom_command(
+#        TARGET ${PROJECT_NAME}  POST_BUILD
+#        COMMAND ${CMAKE_COMMAND} -E copy_directory
+#                ${PROJECT_BINARY_DIR}/../opencv/bin/dll_release
+#                $<TARGET_FILE_DIR:${TARGET_NAME}>)
+
+#add_custom_command(
+#        TARGET ${PROJECT_NAME}  POST_BUILD
+#        COMMAND ${CMAKE_COMMAND} -E copy_directory
+#                ${PROJECT_BINARY_DIR}/../openvino/bin/intel64/dll_release
+#                $<TARGET_FILE_DIR:${TARGET_NAME}>)
+
+#add_custom_command(
+#       TARGET ${PROJECT_NAME}  POST_BUILD
+#       COMMAND ${CMAKE_COMMAND} -E copy_directory
+#               ${PROJECT_BINARY_DIR}/../opencv/bin/dll_debug
+#               $<TARGET_FILE_DIR:${TARGET_NAME}>)
+
+ add_custom_command(
+         TARGET ${PROJECT_NAME}  POST_BUILD
+         COMMAND ${CMAKE_COMMAND} -E copy_directory
+                ${PROJECT_BINARY_DIR}/../openvino/bin/intel64/dll_debug
                 $<TARGET_FILE_DIR:${TARGET_NAME}>)
-
-add_custom_command(
-        TARGET ${PROJECT_NAME}  POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory
-                ${PROJECT_BINARY_DIR}/../openvino/bin/intel64/dll_release
-                $<TARGET_FILE_DIR:${TARGET_NAME}>)
-
-# add_custom_command(
-      #  TARGET ${PROJECT_NAME}  POST_BUILD
-      # COMMAND ${CMAKE_COMMAND} -E copy_directory
-              # ${PROJECT_BINARY_DIR}/../opencv/bin/dll_debug
-              # $<TARGET_FILE_DIR:${TARGET_NAME}>)
-
-# add_custom_command(
-        # TARGET ${PROJECT_NAME}  POST_BUILD
-        # COMMAND ${CMAKE_COMMAND} -E copy_directory
-               # ${PROJECT_BINARY_DIR}/../openvino/bin/intel64/dll_debug
-               # $<TARGET_FILE_DIR:${TARGET_NAME}>)
