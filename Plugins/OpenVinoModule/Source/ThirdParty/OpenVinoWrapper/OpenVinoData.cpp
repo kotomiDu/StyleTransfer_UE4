@@ -108,6 +108,7 @@ OpenVinoData::Initialize(
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 	loading_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count());
+	logfile_mode << "model input size:" << inferWidth << "," << inferHeight << "\n";
 	logfile_mode << "Loading model takes:" << loading_time << "ms\n";
 }
 
@@ -410,6 +411,7 @@ void OpenVinoData::Initialize_BaseOCL(
 
 	std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 	loading_time = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count());
+	logfile_mode << "model input size:" << inferWidth << "," << inferHeight <<"\n";
 	logfile_mode << "Loading model takes:" << loading_time << "ms\n";
 }
 
