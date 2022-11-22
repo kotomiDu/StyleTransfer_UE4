@@ -377,15 +377,16 @@ void OpenVinoData::Initialize_BaseOCL(
 		//.convert_color(ov::preprocess::ColorFormat::RGB)
 		//.convert_layout("NCHW")
 		//.resize(ov::preprocess::ResizeAlgorithm::RESIZE_LINEAR)
-		.convert_element_type(ov::element::f32)
+		.convert_element_type(ov::element::f16)
 		.mean(127.5)
 		.scale(127.5);
 
 	ppp.input().model().set_layout("NCHW");
 
+	//ppp.output().postprocess().convert_element_type(ov::element::f16);
 	// 4)Setting output info
 	ppp.output().tensor()
-		.set_element_type(ov::element::f32);
+		.set_element_type(ov::element::f16);
 
 	model = ppp.build();
 
@@ -403,9 +404,9 @@ void OpenVinoData::Initialize_BaseOCL(
 
 	// 8)Create input and output GPU Blobs
 	_inputBuffer = cl::Buffer(_oclCtx, CL_MEM_READ_WRITE, input_shape[1] * input_shape[2] * input_shape[3] * sizeof(uint8_t), NULL, NULL);
-	_outputBuffer = cl::Buffer(_oclCtx, CL_MEM_READ_WRITE, input_shape[1] * input_shape[2] * input_shape[3] * sizeof(float), NULL, NULL);
+	_outputBuffer = cl::Buffer(_oclCtx, CL_MEM_READ_WRITE, input_shape[1] * input_shape[2] * input_shape[3] * sizeof(cl_half), NULL, NULL);
 	auto shared_in_blob = remote_context.create_tensor(ov::element::u8, input_shape, _inputBuffer);
-	auto shared_output_blob = remote_context.create_tensor(ov::element::f32, input_shape, _outputBuffer);  //style transfer output has the same shape with input
+	auto shared_output_blob = remote_context.create_tensor(ov::element::f16, input_shape, _outputBuffer);  //style transfer output has the same shape with input
 	infer_request.set_input_tensor(shared_in_blob);
 	infer_request.set_output_tensor(shared_output_blob);
 
