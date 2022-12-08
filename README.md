@@ -66,7 +66,7 @@ realtime style transfer in unreal engine
 * `cmake ..`
 * open `OpenVinoWrapper.sln` project properties -> C/C++ -> preprocessor -> preprocessor definition -> join NOMINMAX
 
-##Step to import OpenVINO plugin into another UE project
+## Step to import OpenVINO plugin into another UE project
 * make sure your project is C++ project. If not, directly new c++ class(left top UI), it will automatically convert the project into C++ project
 * copy Folder `Content\Intel` and `Plugin` into new project folder
 * open `*uproject`
